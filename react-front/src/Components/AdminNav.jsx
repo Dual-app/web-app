@@ -2,66 +2,51 @@ import { Link } from "react-router-dom";
 
 function AdminNav() {
   return (
-    <nav className="bg-blue-600 w-64 h-screen">
-      <div className="flex flex-col">
+    <div className="top-0 left-0 h-screen w-1/6 bg-[#83B582] text-white flex flex-col pt-8">
+      <div className="flex flex-col items-start gap- mb-8 pl-7">
+        <h3 className="text-center mb-10 font-semibold text-xl">
+          <i className="bi bi-person-badge"></i> Admin
+        </h3>
+      </div>
+      <div className="flex flex-col gap-2 px-2">
         <Link
-          to="/"
-          className="flex gap-4 items-center text-xl text-white hover:text-gray-300 p-6"
+          to="/dashboard"
+          className="hover:bg-[#55a754] rounded flex items-center text-white pl-7 py-3 !no-underline"
         >
-          <i className="fas fa-home"></i>
-          Home
+          <i className="bi bi-speedometer2 mr-2"></i> Dashboard
         </Link>
         <Link
-          to="/usermanagement"
-          className="flex gap-4 items-center text-xl text-white hover:text-gray-300 p-6"
+          to="/lawyermanagement"
+          className="hover:bg-[#55a754] rounded flex items-center text-white pl-7 py-3 !no-underline"
         >
-          <i className="fas fa-users"></i>
-          User Management
+          <i className="bi bi-people mr-2"></i> Lawyer
+        </Link>
+        <Link
+          to="/clients"
+          className="hover:bg-[#55a754] rounded flex items-center text-white pl-7 py-3 !no-underline"
+        >
+          <i className="bi bi-people mr-2"></i> Clients
         </Link>
         <Link
           to="/reports"
-          className="flex gap-4 items-center text-xl text-white hover:text-gray-300 p-6"
+          className="hover:bg-[#55a754] rounded flex items-center text-white pl-7 py-3 !no-underline"
         >
-          <i className="fas fa-chart-line"></i>
-          Reports
+          <i className="bi bi-file-earmark-text mr-2"></i> Reports
         </Link>
         <Link
-          to="/customers"
-          className="flex gap-4 items-center text-xl text-white hover:text-gray-300 p-6"
+          to="/settings"
+          className="hover:bg-[#55a754] rounded flex items-center text-white pl-7 py-3 !no-underline"
         >
-          <i className="fas fa-users"></i>
-          Customers
+          <i className="bi bi-gear mr-2"></i> Settings
         </Link>
         <Link
-          to="/products"
-          className="flex gap-4 items-center text-xl text-white hover:text-gray-300 p-6"
+          to="/logout"
+          className="hover:bg-[#55a754] rounded flex items-center text-white pl-7 py-3 !no-underline"
         >
-          <i className="fas fa-box"></i>
-          Products
-        </Link>
-        <Link
-          to="/finance"
-          className="flex gap-4 items-center text-xl text-white hover:text-gray-300 p-6"
-        >
-          <i className="fas fa-dollar-sign"></i>
-          Finance
-        </Link>
-        <Link
-          to="/hr"
-          className="flex gap-4 items-center text-xl text-white hover:text-gray-300 p-6"
-        >
-          HR
-        </Link>
-
-        <Link
-          to="/dashboard"
-          className="flex gap-4 items-center text-xl text-white hover:text-gray-300 p-6"
-        >
-          <i className="fas fa-tachometer-alt"></i>
-          Settings
+          <i className="bi bi-box-arrow-right mr-2"></i> Logout
         </Link>
       </div>
-    </nav>
+    </div>
   );
 }
 

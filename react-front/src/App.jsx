@@ -2,8 +2,11 @@ import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import "./App.css";
 import Dashboard from "./Admin/dashboard";
 import UserManagement from "./Admin/UserManagement";
+import LawyerManagement from "./Admin/LawyerManagement";
 import Home from "./Customer/Home";
 import { useEffect } from "react";
+import AdminNav from "./Components/AdminNav";
+import AdminTop from "./Components/AdminTop";
 
 function App() {
   let isAdmin = true;
@@ -18,24 +21,27 @@ function App() {
     }
   }, [isAdmin, navigate, location.pathname]);
 
-  if (isAdmin) {
-    return (
-      <>
-        <Routes>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/usermanagement" element={<UserManagement />} />
-        </Routes>
-      </>
-    );
-  } else {
-    return (
-      <>
-        <Routes>
-          <Route path="/" element={<Home />} />
-        </Routes>
-      </>
-    );
-  }
+  return (
+    <div className="flex min-h-screen bg-white">
+      <AdminNav />
+      <div className="flex flex-col w-full p-7">
+        <AdminTop />
+        <div className="flex-1 p-8">
+          {isAdmin ? (
+            <Routes>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/usermanagement" element={<UserManagement />} />
+              <Route path="/lawyermanagement" element={<LawyerManagement />} />
+            </Routes>
+          ) : (
+            <Routes>
+              <Route path="/" element={<Home />} />
+            </Routes>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default App;

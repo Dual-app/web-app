@@ -1,21 +1,33 @@
 function AdminTop() {
   return (
-    <>
-      <div className="flex py-6 justify-between items-center">
-        <div className="px-10">
-          <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
-        </div>
-        <div className="flex justify-evenly items-center w-24/100">
-          <input
-            className="text-md px-5 py-2 border rounded border-gray-300 focus:outline-none focus:border-black"
-            type="text"
-            placeholder="Search"
-          />
-          <i class="fa-regular fa-bell text-2xl"></i>
-          <p className="text-xl">Admin</p>
+    <div className="topbar flex justify-between items-center">
+      <h3>Dashboard</h3>
+      <div>Admin Name</div>
+      <div className="flex">
+        <div className="relative ms-3">
+          <button
+            className="bg-white px-3 py-2 relative"
+            type="button"
+            id="notificationBtn"
+          >
+            <i className="bi bi-bell"></i>
+            <span
+              className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full px-2 py-0.5"
+              id="notificationCount"
+            >
+              3
+            </span>
+          </button>
+          {/* <!-- Dropdown (static for now) --> */}
+          <ul
+            className="absolute right-0 mt-2 w-72 bg-white shadow-lg rounded p-2 z-10 hidden"
+            id="notificationList"
+          >
+            {/* <!-- Notifications will appear here --> */}
+          </ul>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
