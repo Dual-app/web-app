@@ -2,4 +2,6 @@
 
 * {
   font-family: "Poppins", sans-serif;
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 transparent;
 }

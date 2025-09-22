@@ -3,6 +3,8 @@ import { usePostGet } from "../function/postget";
 function LawyerManagement() {
   const data = usePostGet();
 
+  const lawyerID = data ? data.length + 1 : 1;
+
   return (
     <>
       <div className="bg-white p-6 rounded-xl shadow mb-8">
@@ -18,6 +20,7 @@ function LawyerManagement() {
               type="text"
               className="w-full border border-gray-300 rounded px-3 py-2 bg-gray-100"
               id="lawyerID"
+              value={lawyerID}
               readOnly
             />
           </div>

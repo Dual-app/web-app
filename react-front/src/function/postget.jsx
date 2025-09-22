@@ -9,7 +9,7 @@ export function usePostGet() {
       .get(
         window.location.hostname === "localhost"
           ? "http://localhost:5000/api/hello"
-          : "https://media-blog-backend.up.railway.app/api/hello"
+          : ""
       )
       .then((response) => {
         setApiData(response.data);
