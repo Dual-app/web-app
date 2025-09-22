@@ -1,9 +1,33 @@
+import React, { useState } from "react";
 import { usePostGet } from "../function/postget";
 
 function LawyerManagement() {
-  const data = usePostGet();
+  const initialData = usePostGet();
+  const [lawyers, setLawyers] = useState(
+    Array.isArray(initialData) ? initialData : []
+  );
 
-  const lawyerID = data ? data.length + 1 : 1;
+  const lawyerID = lawyers.length + 1;
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const form = event.target;
+    const lawyerName = form.lawyerName.value;
+    const lawyerAddress = form.address.value;
+    const lawyerPhone = form.phone.value;
+    const lawyerType = form.lawyerType.value;
+    if (!lawyerName || !lawyerAddress || !lawyerPhone || !lawyerType) return;
+    const newLawyer = {
+      ID: lawyerID,
+      Name: lawyerName,
+      Address: lawyerAddress,
+      Phone: lawyerPhone,
+      Type: lawyerType,
+    };
+    setLawyers([...lawyers, newLawyer]);
+    form.reset();
+    alert("Lawyer registered successfully!");
+  };
 
   return (
     <>
@@ -11,7 +35,7 @@ function LawyerManagement() {
         <h2 className="mb-5 text-[#677D6A] font-semibold text-lg">
           Register New Lawyer
         </h2>
-        <form id="lawyerForm">
+        <form id="lawyerForm" onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="lawyerID" className="block font-medium mb-1">
               Lawyer ID
@@ -86,50 +110,50 @@ function LawyerManagement() {
       </div>
 
       <section>
-        <h2 class="text-lg font-semibold mb-4">Existing Lawyers</h2>
-        <div class="overflow-x-auto">
+        <h2 className="text-lg font-semibold mb-4">Existing Lawyers</h2>
+        <div className="overflow-x-auto">
           <table
             id="lawyerTable"
-            class="w-full bg-white rounded-xl shadow overflow-hidden"
+            className="w-full bg-white rounded-xl shadow overflow-hidden"
           >
             <thead>
               <tr>
-                <th class="bg-[#83B582] text-white text-left px-4 py-3">ID</th>
-                <th class="bg-[#83B582] text-white text-left px-4 py-3">
+                <th className="bg-[#83B582] text-white text-left px-4 py-3">
+                  ID
+                </th>
+                <th className="bg-[#83B582] text-white text-left px-4 py-3">
                   Name
                 </th>
-                <th class="bg-[#83B582] text-white text-left px-4 py-3">
+                <th className="bg-[#83B582] text-white text-left px-4 py-3">
                   Address
                 </th>
-                <th class="bg-[#83B582] text-white text-left px-4 py-3">
+                <th className="bg-[#83B582] text-white text-left px-4 py-3">
                   Phone
                 </th>
-                <th class="bg-[#83B582] text-white text-left px-4 py-3">
+                <th className="bg-[#83B582] text-white text-left px-4 py-3">
                   Type of Lawyer
                 </th>
-                <th class="bg-[#83B582] text-white text-left px-4 py-3">
+                <th className="bg-[#83B582] text-white text-left px-4 py-3">
                   Action
                 </th>
               </tr>
             </thead>
-            {data && (
-              <tbody>
-                {data.map((lawyer) => (
-                  <tr key={lawyer.id}>
-                    <td class="border-t px-4 py-3">{lawyer.ID}</td>
-                    <td class="border-t px-4 py-3">{lawyer.Name}</td>
-                    <td class="border-t px-4 py-3">{lawyer.Address}</td>
-                    <td class="border-t px-4 py-3">{lawyer.Phone}</td>
-                    <td class="border-t px-4 py-3">{lawyer.Type}</td>
-                    <td class="border-t px-4 py-3">
-                      <button class="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded">
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            )}
+            <tbody>
+              {lawyers.map((lawyer, idx) => (
+                <tr key={lawyer.ID || idx}>
+                  <td className="border-t px-4 py-3">{lawyer.ID}</td>
+                  <td className="border-t px-4 py-3">{lawyer.Name}</td>
+                  <td className="border-t px-4 py-3">{lawyer.Address}</td>
+                  <td className="border-t px-4 py-3">{lawyer.Phone}</td>
+                  <td className="border-t px-4 py-3">{lawyer.Type}</td>
+                  <td className="border-t px-4 py-3">
+                    <button className="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded">
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         </div>
       </section>
