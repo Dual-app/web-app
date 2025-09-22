@@ -22,7 +22,6 @@ const data = [
     Address: "123 Main St, City, Country",
     Phone: "+1234567890",
     Type: "Criminal",
-    Availability: "Available",
   },
   {
     ID: 2,
@@ -30,7 +29,6 @@ const data = [
     Address: "456 Elm St, City, Country",
     Phone: "+9876543210",
     Type: "Business",
-    Availability: "Not Available",
   },
   {
     ID: 3,
@@ -38,7 +36,6 @@ const data = [
     Address: "789 Oak St, City, Country",
     Phone: "+1122334455",
     Type: "Family",
-    Availability: "Available",
   },
   {
     ID: 4,
@@ -46,7 +43,6 @@ const data = [
     Address: "321 Pine St, City, Country",
     Phone: "+5566778899",
     Type: "Corporate",
-    Availability: "Not Available",
   },
   {
     ID: 5,
@@ -54,7 +50,13 @@ const data = [
     Address: "654 Cedar St, City, Country",
     Phone: "+9988776655",
     Type: "Criminal",
-    Availability: "Available",
+  },
+  {
+    ID: 6,
+    Name: "Diana Evans",
+    Address: "987 Maple St, City, Country",
+    Phone: "+4433221100",
+    Type: "Immigration",
   },
 ];
 
