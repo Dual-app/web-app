@@ -1,4 +1,8 @@
+import { usePostGet } from "../function/postget";
+
 function LawyerManagement() {
+  const data = usePostGet();
+
   return (
     <>
       <div className="bg-white p-6 rounded-xl shadow mb-8">
@@ -105,7 +109,24 @@ function LawyerManagement() {
                 </th>
               </tr>
             </thead>
-            <tbody>{/* <!-- Existing lawyers will appear here --> */}</tbody>
+            {data && (
+              <tbody>
+                {data.map((lawyer) => (
+                  <tr key={lawyer.id}>
+                    <td class="border-t px-4 py-3">{lawyer.ID}</td>
+                    <td class="border-t px-4 py-3">{lawyer.Name}</td>
+                    <td class="border-t px-4 py-3">{lawyer.Address}</td>
+                    <td class="border-t px-4 py-3">{lawyer.Phone}</td>
+                    <td class="border-t px-4 py-3">{lawyer.Type}</td>
+                    <td class="border-t px-4 py-3">
+                      <button class="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded">
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            )}
           </table>
         </div>
       </section>
