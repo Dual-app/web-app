@@ -3,7 +3,8 @@ import { useLawyer } from "../hooks/LawyerHook";
 
 function LawyerManagement() {
   // Destructure your hook functions
-  const { lawyers, fetchLawyers, createLawyer, deleteLawyer } = useLawyer();
+  const { lawyers, fetchLawyers, createLawyer, deleteLawyer, error } =
+    useLawyer();
 
   // State for form inputs
   const [formData, setFormData] = useState({
@@ -52,6 +53,11 @@ function LawyerManagement() {
         <h2 className="mb-5 text-[#677D6A] font-semibold text-lg">
           Register New Lawyer
         </h2>
+        {error && (
+          <div className="mb-4 text-red-600 font-semibold bg-red-100 border border-red-300 rounded px-4 py-2">
+            {error}
+          </div>
+        )}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="lawyerName" className="block font-medium mb-1">

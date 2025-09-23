@@ -17,7 +17,12 @@ export const LawyerAPI = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
-    return res.json();
+    const result = await res.json();
+    if (!res.ok) {
+      // Throw error with backend message
+      throw new Error(result.message || "Failed to create lawyer");
+    }
+    return result;
   },
 
   update: async (id, data) => {

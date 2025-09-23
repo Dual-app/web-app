@@ -4,27 +4,48 @@ import { LawyerAPI } from "../api/LawyerAPI";
 export const useLawyer = () => {
   const [lawyers, setLawyers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const fetchLawyers = async () => {
     setLoading(true);
-    const data = await LawyerAPI.getAll();
-    setLawyers(data);
+    setError(null);
+    try {
+      const data = await LawyerAPI.getAll();
+      setLawyers(data);
+    } catch (err) {
+      setError("Failed to fetch lawyers");
+    }
     setLoading(false);
   };
 
   const createLawyer = async (user) => {
-    await LawyerAPI.create(user);
-    fetchLawyers(); // refresh list
+    setError(null);
+    try {
+      await LawyerAPI.create(user);
+      fetchLawyers();
+    } catch (err) {
+      setError(err.message); // Show backend error (e.g., duplicate)
+    }
   };
 
   const updateLawyer = async (id, user) => {
-    await LawyerAPI.update(id, user);
-    fetchLawyers();
+    setError(null);
+    try {
+      await LawyerAPI.update(id, user);
+      fetchLawyers();
+    } catch (err) {
+      setError("Failed to update lawyer");
+    }
   };
 
   const deleteLawyer = async (id) => {
-    await LawyerAPI.delete(id);
-    fetchLawyers();
+    setError(null);
+    try {
+      await LawyerAPI.delete(id);
+      fetchLawyers();
+    } catch (err) {
+      setError("Failed to delete lawyer");
+    }
   };
 
   useEffect(() => {
@@ -34,6 +55,7 @@ export const useLawyer = () => {
   return {
     lawyers,
     loading,
+    error,
     createLawyer,
     updateLawyer,
     deleteLawyer,
