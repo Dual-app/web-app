@@ -22,16 +22,16 @@ function AdminNav() {
           <i className="bi bi-people mr-2"></i> Lawyer
         </Link>
         <Link
-          to="/clients"
+          to="/lawbookmanagement"
           className="hover:bg-[#55a754] rounded flex items-center text-white pl-7 py-3 !no-underline"
         >
-          <i className="bi bi-people mr-2"></i> Clients
+          <i className="bi bi-people mr-2"></i> LawBook
         </Link>
         <Link
-          to="/reports"
+          to="/lawyerschedulemanagement"
           className="hover:bg-[#55a754] rounded flex items-center text-white pl-7 py-3 !no-underline"
         >
-          <i className="bi bi-file-earmark-text mr-2"></i> Reports
+          <i className="bi bi-file-earmark-text mr-2"></i> Schedule
         </Link>
         <Link
           to="/settings"

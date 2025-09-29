@@ -3,6 +3,8 @@ import Home from "../Customer/Home";
 import Dashboard from "../Admin/dashboard";
 import UserManagement from "../Admin/UserManagement";
 import LawyerManagement from "../Admin/LawyerManagement";
+import LawBookManagement from "../Admin/LawBookManagement";
+import LawyerScheduleManagement from "../Admin/LawyerScheduleManagement";
 import App from "../App";
 
 const isAdmin = true; // Replace with your real auth logic
@@ -45,6 +47,23 @@ const router = createBrowserRouter([
               </ProtectedRoute>
             ),
           },
+          {
+            path: "lawbookmanagement",
+            element: (
+              <ProtectedRoute>
+                <LawBookManagement />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "lawyerschedulemanagement",
+            element: (
+              <ProtectedRoute>
+                <LawyerScheduleManagement />
+              </ProtectedRoute>
+            ),
+          }
+
         ]
       : [{ index: true, element: <Home /> }],
   },
