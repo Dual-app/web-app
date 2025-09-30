@@ -1,70 +1,145 @@
-import React from "react";
+import React, { useState } from "react";
 
 function LawBookManagement() {
+  const [formData, setFormData] = useState({
+    title: "",
+    author: "",
+    year: "",
+    category: "",
+    file: null,
+  });
+
+  const [formError, setFormError] = useState({}); // store errors
+
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    if (name === "file") {
+      setFormData((prev) => ({ ...prev, file: files[0] }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+
+    // Clear individual field error when user types
+    setFormError((prev) => ({ ...prev, [name]: "" }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    let errors = {};
+
+    if (!formData.title.trim()) errors.title = "Book Title is required.";
+    if (!formData.author.trim()) errors.author = "Author is required.";
+    if (!formData.year || isNaN(formData.year)) errors.year = "Enter a valid year.";
+    if (!formData.category.trim()) errors.category = "Category is required.";
+    if (!formData.file) errors.file = "Only PDF or DOCX files allowed.";
+
+    if (Object.keys(errors).length > 0) {
+      setFormError(errors);
+      return;
+    }
+
+    // Submit logic here
+    console.log("Form submitted", formData);
+
+    // Reset form
+    setFormData({
+      title: "",
+      author: "",
+      year: "",
+      category: "",
+      file: null,
+    });
+    setFormError({});
+  };
+
   return (
     <>
       <div className="bg-white rounded-lg p-8 shadow-lg w-full">
         <h2 className="mb-5 text-[#83B582] text-xl font-semibold">
           Upload Law Book
         </h2>
-        <form id="uploadForm" className="mb-2" noValidate>
+        <form id="uploadForm" className="mb-2" noValidate onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <input
                 type="text"
-                id="title"
-                className="form-control w-full border rounded px-3 py-2 focus:border-black focus:shadow-none"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                className={`form-control w-full border rounded px-3 py-2 focus:border-black focus:shadow-none ${
+                  formError.title ? "border-red-500" : "border-gray-300"
+                }`}
                 placeholder="Book Title"
               />
-              <small className="text-sm text-[#d9534f]">
-                Book Title is required.
-              </small>
+              {formError.title && (
+                <small className="text-sm text-[#d9534f]">{formError.title}</small>
+              )}
             </div>
+
             <div>
               <input
                 type="text"
-                id="author"
-                className="form-control w-full border rounded px-3 py-2 focus:border-black focus:shadow-none"
+                name="author"
+                value={formData.author}
+                onChange={handleChange}
+                className={`form-control w-full border rounded px-3 py-2 focus:border-black focus:shadow-none ${
+                  formError.author ? "border-red-500" : "border-gray-300"
+                }`}
                 placeholder="Author"
               />
-              <small className="text-sm text-[#d9534f]">
-                Author is required.
-              </small>
+              {formError.author && (
+                <small className="text-sm text-[#d9534f]">{formError.author}</small>
+              )}
             </div>
+
             <div>
               <input
                 type="number"
-                id="year"
-                className="form-control w-full border rounded px-3 py-2 focus:border-black focus:shadow-none"
+                name="year"
+                value={formData.year}
+                onChange={handleChange}
+                className={`form-control w-full border rounded px-3 py-2 focus:border-black focus:shadow-none ${
+                  formError.year ? "border-red-500" : "border-gray-300"
+                }`}
                 placeholder="Year"
               />
-              <small className="text-sm text-[#d9534f]">
-                Enter a valid year.
-              </small>
+              {formError.year && (
+                <small className="text-sm text-[#d9534f]">{formError.year}</small>
+              )}
             </div>
+
             <div>
               <input
                 type="text"
-                id="category"
-                className="form-control w-full border rounded px-3 py-2 focus:border-black focus:shadow-none"
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                className={`form-control w-full border rounded px-3 py-2 focus:border-black focus:shadow-none ${
+                  formError.category ? "border-red-500" : "border-gray-300"
+                }`}
                 placeholder="Category"
               />
-              <small className="text-sm text-[#d9534f]">
-                Category is required.
-              </small>
+              {formError.category && (
+                <small className="text-sm text-[#d9534f]">{formError.category}</small>
+              )}
             </div>
+
             <div className="md:col-span-2">
               <input
                 type="file"
-                id="file"
-                className="form-control w-full border rounded focus:border-black focus:shadow-none"
+                name="file"
+                onChange={handleChange}
+                className={`form-control w-full border rounded focus:border-black focus:shadow-none ${
+                  formError.file ? "border-red-500" : "border-gray-300"
+                }`}
                 accept=".pdf,.docx"
               />
-              <small className="text-sm text-[#d9534f]">
-                Only PDF or DOCX files allowed.
-              </small>
+              {formError.file && (
+                <small className="text-sm text-[#d9534f]">{formError.file}</small>
+              )}
             </div>
           </div>
+
           <button
             type="submit"
             className="mt-4 px-6 py-2 bg-[#83B582] text-white font-semibold rounded hover:bg-[#55a754] flex items-center gap-2 border-none"
