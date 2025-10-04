@@ -6,6 +6,7 @@ function LawyerManagement() {
     useLawyer();
 
   const [formData, setFormData] = useState({
+    Lawyer_ID: "",
     Lawyer_Name: "",
     Lawyer_Address: "",
     Lawyer_Phone: "",
@@ -43,13 +44,17 @@ function LawyerManagement() {
     setFormError(""); 
 
     if (editingId) {
-      await updateLawyer(editingId, formData);
+      const { Lawyer_ID, ...updateData } = formData;
+      await updateLawyer(Number(editingId), updateData);
       setEditingId(null);
     } else {
-      await createLawyer(formData);
+      // Don't send Lawyer_ID on create
+      const { Lawyer_ID, ...dataToCreate } = formData;
+      await createLawyer(dataToCreate);
     }
 
     setFormData({
+      Lawyer_ID: "",
       Lawyer_Name: "",
       Lawyer_Address: "",
       Lawyer_Phone: "",
@@ -60,12 +65,13 @@ function LawyerManagement() {
 
   const handleEdit = (lawyer) => {
     setFormData({
+      Lawyer_ID: lawyer.Lawyer_ID,
       Lawyer_Name: lawyer.Lawyer_Name,
       Lawyer_Address: lawyer.Lawyer_Address,
       Lawyer_Phone: lawyer.Lawyer_Phone,
       Lawyer_Type: lawyer.Lawyer_Type,
     });
-    setEditingId(lawyer.Lawyer_ID);
+    setEditingId(Number(lawyer.Lawyer_ID));
   };
 
   const handleDelete = async (id) => {
@@ -209,14 +215,14 @@ function LawyerManagement() {
 
       <div className="overflow-x-auto">
         <table className="min-w-full border rounded-lg overflow-hidden bg-white shadow">
-          <thead className="bg-[#83B582] text-white">
+          <thead className="bg-[#83B582] text-white w-full">
             <tr>
-              <th className="px-4 py-2">ID</th>
-              <th className="px-4 py-2">Name</th>
-              <th className="px-4 py-2">Address</th>
-              <th className="px-4 py-2">Phone</th>
-              <th className="px-4 py-2">Type</th>
-              <th className="px-4 py-2">Actions</th>
+              <th className="px-4 py-2 w-1/12">ID</th>
+              <th className="px-4 py-2 w-2/12">Name</th>
+              <th className="px-4 py-2 w-3/12">Address</th>
+              <th className="px-4 py-2 w-2/12">Phone</th>
+              <th className="px-4 py-2 w-1/12">Type</th>
+              <th className="px-4 py-2 w-3/12">Actions</th>
             </tr>
           </thead>
           <tbody>

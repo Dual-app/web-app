@@ -45,7 +45,7 @@ function LawyerScheduleManagement() {
         <h2 className="mb-5 text-[#83B582] text-xl font-semibold">
           Register Lawyer’s Schedule
         </h2>
-        <form className="mb-2" id="scheduleForm" noValidate onSubmit={handleSubmit}>
+        <form className="border-bottom" id="scheduleForm" noValidate onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <select
@@ -114,7 +114,7 @@ function LawyerScheduleManagement() {
           </div>
           <button
             type="submit"
-            className="mt-4 px-6 py-2 bg-[#83B582] text-white font-semibold rounded hover:bg-[#55a754] flex items-center gap-2 border-none"
+            className="my-4 px-6 py-2 bg-[#83B582] text-white font-semibold rounded hover:bg-[#55a754] flex items-center gap-2 border-none"
           >
             Add Schedule
           </button>
@@ -130,7 +130,7 @@ function LawyerScheduleManagement() {
           <div className="flex gap-2 w-full md:w-auto">
             <select
               id="dateFilter"
-              className="form-control border rounded px-3 py-2 focus:border-black focus:shadow-none"
+              className="form-control border rounded px-3 py-2 focus:border-black focus:shadow-none text-md"
             >
               <option value="">Filter by Date</option>
               <option>2025-09-08</option>

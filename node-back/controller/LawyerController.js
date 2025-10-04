@@ -46,8 +46,11 @@ exports.getAllLawyers = async (req, res) => {
 
 exports.updateLawyer = async (req, res) => {
   try {
-    const updatedLawyer = await Lawyer.findByIdAndUpdate(
-      req.params.id,
+    const lawyerId = Number(req.params.id);
+    // Prevent updating Lawyer_ID
+    if ("Lawyer_ID" in req.body) delete req.body.Lawyer_ID;
+    const updatedLawyer = await Lawyer.findOneAndUpdate(
+      { Lawyer_ID: lawyerId },
       req.body,
       { new: true }
     );
