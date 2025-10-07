@@ -36,6 +36,7 @@ function App() {
               <Route path="/lawbookmanagement" element={<LawBookManagement />} />
               <Route path="/lawyerschedulemanagement" element={<LawyerScheduleManagement />} />
               <Route path="/adminmanagement" element={<AdminManagement />} />
+              <Route path="/home" element={<Home />} />
 
             </Routes>
           ) : (

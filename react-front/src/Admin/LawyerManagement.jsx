@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLawyer } from "../hooks/LawyerHook";
+import { notify } from "../utils/notify";
 
 function LawyerManagement() {
   const { lawyers, fetchLawyers, createLawyer, deleteLawyer, updateLawyer, error } =
@@ -11,22 +12,65 @@ function LawyerManagement() {
     Lawyer_Address: "",
     Lawyer_Phone: "",
     Lawyer_Type: "",
+    Lawyer_Photo: "", // NEW: base64 data URL
   });
 
+  const [photoPreview, setPhotoPreview] = useState(""); // NEW: UI preview
   const [editingId, setEditingId] = useState(null);
-  const [formError, setFormError] = useState(""); 
+  const [formError, setFormError] = useState("");
+  const [photoError, setPhotoError] = useState(""); // NEW: photo validation
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchLawyers();
   }, []);
 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // --- Photo handling ---
+  const handlePhotoChange = async (e) => {
+    setPhotoError("");
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const okTypes = ["image/png", "image/jpeg", "image/jpg"];
+    if (!okTypes.includes(file.type)) {
+      setPhotoError("Please upload a PNG or JPG image.");
+      e.target.value = "";
+      return;
+    }
+
+    const maxBytes = 2 * 1024 * 1024; // 2MB
+    if (file.size > maxBytes) {
+      setPhotoError("Image is too large. Max size is 2MB.");
+      e.target.value = "";
+      return;
+    }
+
+    // Convert to base64 data URL for preview + send
+    const asDataUrl = await fileToDataUrl(file);
+    setPhotoPreview(asDataUrl);
+    setFormData((prev) => ({ ...prev, Lawyer_Photo: asDataUrl }));
+  };
+
+  const removePhoto = () => {
+    setPhotoPreview("");
+    setFormData((prev) => ({ ...prev, Lawyer_Photo: "" }));
+    setPhotoError("");
+  };
+
+  function fileToDataUrl(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+  // --- End photo handling ---
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,7 +85,7 @@ function LawyerManagement() {
       return;
     }
 
-    setFormError(""); 
+    setFormError("");
 
     if (editingId) {
       const { Lawyer_ID, ...updateData } = formData;
@@ -59,7 +103,9 @@ function LawyerManagement() {
       Lawyer_Address: "",
       Lawyer_Phone: "",
       Lawyer_Type: "",
+      Lawyer_Photo: "",
     });
+    setPhotoPreview("");
     fetchLawyers();
   };
 
@@ -70,14 +116,29 @@ function LawyerManagement() {
       Lawyer_Address: lawyer.Lawyer_Address,
       Lawyer_Phone: lawyer.Lawyer_Phone,
       Lawyer_Type: lawyer.Lawyer_Type,
+      Lawyer_Photo: lawyer.Lawyer_Photo || "",
     });
+    setPhotoPreview(lawyer.Lawyer_Photo || "");
     setEditingId(Number(lawyer.Lawyer_ID));
+    setPhotoError("");
   };
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this lawyer?")) {
       await deleteLawyer(id);
       fetchLawyers();
+      if (editingId === id) {
+        setEditingId(null);
+        setFormData({
+          Lawyer_ID: "",
+          Lawyer_Name: "",
+          Lawyer_Address: "",
+          Lawyer_Phone: "",
+          Lawyer_Type: "",
+          Lawyer_Photo: "",
+        });
+        setPhotoPreview("");
+      }
     }
   };
 
@@ -97,7 +158,11 @@ function LawyerManagement() {
             {formError}
           </div>
         )}
-
+        {photoError && (
+          <div className="mb-4 p-3 text-sm text-red-700 bg-red-100 border border-red-400 rounded">
+            {photoError}
+          </div>
+        )}
         {error && (
           <div className="mb-4 p-3 text-sm text-red-700 bg-red-100 border border-red-400 rounded">
             {error}
@@ -106,6 +171,7 @@ function LawyerManagement() {
 
         <form onSubmit={handleSubmit} noValidate>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Name */}
             <div>
               <input
                 type="text"
@@ -126,6 +192,7 @@ function LawyerManagement() {
               )}
             </div>
 
+            {/* Address */}
             <div>
               <input
                 type="text"
@@ -146,6 +213,7 @@ function LawyerManagement() {
               )}
             </div>
 
+            {/* Phone */}
             <div>
               <input
                 type="text"
@@ -166,6 +234,7 @@ function LawyerManagement() {
               )}
             </div>
 
+            {/* Type */}
             <div>
               <select
                 name="Lawyer_Type"
@@ -184,6 +253,8 @@ function LawyerManagement() {
                 <option value="Business">Business</option>
                 <option value="Family">Family</option>
                 <option value="Corporate">Corporate</option>
+                <option value="Insurance">Insurance</option>
+                <option value="Property">Property</option>
                 <option value="Immigration">Immigration</option>
               </select>
               {formError && !formData.Lawyer_Type.trim() && (
@@ -191,6 +262,42 @@ function LawyerManagement() {
                   Type of Lawyer is required.
                 </small>
               )}
+            </div>
+
+            {/* Photo uploader (full width on md) */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium mb-1">
+                Upload Photo (PNG/JPG, max 2MB)
+              </label>
+              <div className="flex items-center gap-4">
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg"
+                  onChange={handlePhotoChange}
+                  className="form-control w-full border rounded px-3 py-2 border-gray-300"
+                />
+                {photoPreview ? (
+                  <div className="flex items-center gap-2">
+                    <img
+                      src={photoPreview}
+                      alt="Preview"
+                      className="w-14 h-14 rounded-full object-cover border"
+                    />
+                    <button
+                      type="button"
+                      onClick={removePhoto}
+                      className="px-3 py-1 bg-gray-100 text-gray-800 rounded hover:bg-gray-200 text-sm"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <div className="text-xs text-gray-500">No photo selected</div>
+                )}
+              </div>
+              <small className="text-xs text-gray-500 block mt-1">
+                Tip: square images look best in the table avatar.
+              </small>
             </div>
           </div>
 
@@ -203,6 +310,7 @@ function LawyerManagement() {
         </form>
       </div>
 
+      {/* Search */}
       <div className="flex justify-between items-center mb-4">
         <input
           type="text"
@@ -213,12 +321,14 @@ function LawyerManagement() {
         />
       </div>
 
+      {/* Table */}
       <div className="overflow-x-auto">
         <table className="min-w-full border rounded-lg overflow-hidden bg-white shadow">
           <thead className="bg-[#83B582] text-white w-full">
             <tr>
               <th className="px-4 py-2 w-1/12">ID</th>
               <th className="px-4 py-2 w-2/12">Name</th>
+              <th className="px-4 py-2 w-1/12">Photo</th>
               <th className="px-4 py-2 w-3/12">Address</th>
               <th className="px-4 py-2 w-2/12">Phone</th>
               <th className="px-4 py-2 w-1/12">Type</th>
@@ -228,7 +338,7 @@ function LawyerManagement() {
           <tbody>
             {filteredLawyers.length === 0 ? (
               <tr>
-                <td colSpan="6" className="text-center text-gray-500 py-4">
+                <td colSpan="7" className="text-center text-gray-500 py-4">
                   No lawyers found.
                 </td>
               </tr>
@@ -237,6 +347,19 @@ function LawyerManagement() {
                 <tr key={lawyer.Lawyer_ID} className="border-t">
                   <td className="px-4 py-2">{lawyer.Lawyer_ID}</td>
                   <td className="px-4 py-2">{lawyer.Lawyer_Name}</td>
+                  <td className="px-4 py-2">
+                    {lawyer.Lawyer_Photo ? (
+                      <img
+                        src={lawyer.Lawyer_Photo}
+                        alt={`${lawyer.Lawyer_Name} avatar`}
+                        className="w-10 h-10 rounded-full object-cover border inline-block"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-xs">
+                        N/A
+                      </div>
+                    )}
+                  </td>
                   <td className="px-4 py-2">{lawyer.Lawyer_Address}</td>
                   <td className="px-4 py-2">{lawyer.Lawyer_Phone}</td>
                   <td className="px-4 py-2">{lawyer.Lawyer_Type}</td>

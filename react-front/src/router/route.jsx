@@ -62,6 +62,14 @@ const router = createBrowserRouter([
                 <AdminManagement />
               </ProtectedRoute>
             ),
+          },
+          {
+            path: "home",
+            element: (
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            ),
           }
       
 
