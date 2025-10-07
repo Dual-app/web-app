@@ -1,10 +1,10 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import Home from "../Customer/Home";
 import Dashboard from "../Admin/dashboard";
-import UserManagement from "../Admin/UserManagement";
 import LawyerManagement from "../Admin/LawyerManagement";
 import LawBookManagement from "../Admin/LawBookManagement";
 import LawyerScheduleManagement from "../Admin/LawyerScheduleManagement";
+import AdminManagement from "../Admin/AdminManagement";
 import App from "../App";
 
 const isAdmin = true; // Replace with your real auth logic
@@ -32,14 +32,6 @@ const router = createBrowserRouter([
             ),
           },
           {
-            path: "usermanagement",
-            element: (
-              <ProtectedRoute>
-                <UserManagement />
-              </ProtectedRoute>
-            ),
-          },
-          {
             path: "lawyermanagement",
             element: (
               <ProtectedRoute>
@@ -62,7 +54,16 @@ const router = createBrowserRouter([
                 <LawyerScheduleManagement />
               </ProtectedRoute>
             ),
+          },
+          {
+            path: "adminmanagement",
+            element: (
+              <ProtectedRoute>
+                <AdminManagement />
+              </ProtectedRoute>
+            ),
           }
+      
 
         ]
       : [{ index: true, element: <Home /> }],

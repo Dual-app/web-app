@@ -15,6 +15,12 @@ function AdminNav() {
         >
           <i className="bi bi-speedometer2 mr-2"></i> Dashboard
         </Link>
+         <Link
+          to="/adminmanagement"
+          className="hover:bg-[#55a754] rounded flex items-center text-white pl-7 py-3 !no-underline"
+        >
+          <i className="bi bi-box-arrow-right mr-2"></i> Admin
+        </Link>
         <Link
           to="/lawyermanagement"
           className="hover:bg-[#55a754] rounded flex items-center text-white pl-7 py-3 !no-underline"
@@ -45,6 +51,7 @@ function AdminNav() {
         >
           <i className="bi bi-box-arrow-right mr-2"></i> Logout
         </Link>
+        
       </div>
     </div>
   );
