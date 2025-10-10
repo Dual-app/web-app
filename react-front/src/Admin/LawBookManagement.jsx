@@ -36,7 +36,7 @@ function LawBookManagement() {
     if (Object.keys(errors).length > 0) {
       setFormError(errors);
       return;
-    }
+    }~
 
     // Submit logic here
     console.log("Form submitted", formData);
@@ -56,7 +56,7 @@ function LawBookManagement() {
     <>
       <div className="bg-white rounded-lg p-8 shadow-lg w-full">
         <h2 className="mb-5 text-[#83B582] text-xl font-semibold">
-          Upload Law Book
+          Register Law Book
         </h2>
         <form id="uploadForm" className="border-bottom" noValidate onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
