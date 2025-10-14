@@ -3,8 +3,14 @@ import { useLawyer } from "../hooks/LawyerHook";
 import { notify } from "../utils/notify";
 
 function LawyerManagement() {
-  const { lawyers, fetchLawyers, createLawyer, deleteLawyer, updateLawyer, error } =
-    useLawyer();
+  const {
+    lawyers,
+    fetchLawyers,
+    createLawyer,
+    deleteLawyer,
+    updateLawyer,
+    error,
+  } = useLawyer();
 
   const [formData, setFormData] = useState({
     Lawyer_ID: "",
@@ -17,18 +23,57 @@ function LawyerManagement() {
 
   const [photoPreview, setPhotoPreview] = useState(""); // NEW: UI preview
   const [editingId, setEditingId] = useState(null);
-  const [formError, setFormError] = useState(""); 
+  const [formError, setFormError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [photoError, setPhotoError] = useState("");
 
   useEffect(() => {
     fetchLawyers();
   }, []);
 
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate type
+    const validTypes = ["image/png", "image/jpeg"];
+    if (!validTypes.includes(file.type)) {
+      setPhotoError("❌ Only PNG or JPG files are allowed!");
+      setPhotoPreview("");
+      setFormData((prev) => ({ ...prev, Lawyer_Photo: "" }));
+      return;
+    }
+
+    // Validate size (2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      setPhotoError("⚠️ File too large! Maximum size is 2MB.");
+      setPhotoPreview("");
+      setFormData((prev) => ({ ...prev, Lawyer_Photo: "" }));
+      return;
+    }
+
+    setPhotoError("");
+
+    // Convert to Base64
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFormData((prev) => ({ ...prev, Lawyer_Photo: reader.result }));
+      setPhotoPreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Remove selected photo
+  const removePhoto = () => {
+    setFormData((prev) => ({ ...prev, Lawyer_Photo: "" }));
+    setPhotoPreview("");
+    setPhotoError("");
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -126,7 +171,12 @@ function LawyerManagement() {
           </div>
         )}
 
-        <form id="lawyerForm" className="border-bottom" noValidate onSubmit={handleSubmit}>
+        <form
+          id="lawyerForm"
+          className="border-bottom"
+          noValidate
+          onSubmit={handleSubmit}
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Name */}
             <div>
@@ -266,64 +316,65 @@ function LawyerManagement() {
           </button>
         </form>
 
-      <div className="flex justify-between items-center mb-4">
-        <input
-          type="text"
-          placeholder="Search by Name..."
-          className="form-control border rounded px-3 py-2 w-full md:w-1/3 focus:border-black focus:shadow-none"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
+        <div className="flex justify-between items-center mb-4">
+          <input
+            type="text"
+            placeholder="Search by Name..."
+            className="form-control border rounded px-3 py-2 w-full md:w-1/3 focus:border-black focus:shadow-none"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full border rounded-lg overflow-hidden bg-white shadow">
-          <thead className="bg-[#83B582] text-white w-full">
-            <tr>
-              <th className="px-4 py-2 w-1/12">ID</th>
-              <th className="px-4 py-2 w-2/12">Name</th>
-              <th className="px-4 py-2 w-3/12">Address</th>
-              <th className="px-4 py-2 w-2/12">Phone</th>
-              <th className="px-4 py-2 w-1/12">Type</th>
-              <th className="px-4 py-2 w-3/12">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredLawyers.length === 0 ? (
+        <div className="overflow-x-auto">
+          <table className="min-w-full border rounded-lg overflow-hidden bg-white shadow">
+            <thead className="bg-[#83B582] text-white w-full">
               <tr>
-                <td colSpan="6" className="text-center text-gray-500 py-4">
-                  No lawyers found.
-                </td>
+                <th className="px-4 py-2 w-1/12">ID</th>
+                <th className="px-4 py-2 w-2/12">Name</th>
+                <th className="px-4 py-2 w-3/12">Address</th>
+                <th className="px-4 py-2 w-2/12">Phone</th>
+                <th className="px-4 py-2 w-1/12">Type</th>
+                <th className="px-4 py-2 w-3/12">Actions</th>
               </tr>
-            ) : (
-              filteredLawyers.map((lawyer) => (
-                <tr key={lawyer.Lawyer_ID} className="border-t">
-                  <td className="px-4 py-2">{lawyer.Lawyer_ID}</td>
-                  <td className="px-4 py-2">{lawyer.Lawyer_Name}</td>
-                  <td className="px-4 py-2">{lawyer.Lawyer_Address}</td>
-                  <td className="px-4 py-2">{lawyer.Lawyer_Phone}</td>
-                  <td className="px-4 py-2">{lawyer.Lawyer_Type}</td>
-                  <td className="px-4 py-2 flex gap-2">
-                    <button
-                      className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
-                      onClick={() => handleEdit(lawyer)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
-                      onClick={() => handleDelete(lawyer.Lawyer_ID)}
-                    >
-                      Delete
-                    </button>
+            </thead>
+            <tbody>
+              {filteredLawyers.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="text-center text-gray-500 py-4">
+                    No lawyers found.
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                filteredLawyers.map((lawyer) => (
+                  <tr key={lawyer.Lawyer_ID} className="border-t">
+                    <td className="px-4 py-2">{lawyer.Lawyer_ID}</td>
+                    <td className="px-4 py-2">{lawyer.Lawyer_Name}</td>
+                    <td className="px-4 py-2">{lawyer.Lawyer_Address}</td>
+                    <td className="px-4 py-2">{lawyer.Lawyer_Phone}</td>
+                    <td className="px-4 py-2">{lawyer.Lawyer_Type}</td>
+                    <td className="px-4 py-2 flex gap-2">
+                      <button
+                        className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
+                        onClick={() => handleEdit(lawyer)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
+                        onClick={() => handleDelete(lawyer.Lawyer_ID)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
-      </>
+    </>
   );
 }
 
