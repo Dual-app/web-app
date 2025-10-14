@@ -17,8 +17,7 @@ function LawyerManagement() {
 
   const [photoPreview, setPhotoPreview] = useState(""); // NEW: UI preview
   const [editingId, setEditingId] = useState(null);
-  const [formError, setFormError] = useState("");
-  const [photoError, setPhotoError] = useState(""); // NEW: photo validation
+  const [formError, setFormError] = useState(""); 
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
@@ -30,47 +29,6 @@ function LawyerManagement() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // --- Photo handling ---
-  const handlePhotoChange = async (e) => {
-    setPhotoError("");
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const okTypes = ["image/png", "image/jpeg", "image/jpg"];
-    if (!okTypes.includes(file.type)) {
-      setPhotoError("Please upload a PNG or JPG image.");
-      e.target.value = "";
-      return;
-    }
-
-    const maxBytes = 2 * 1024 * 1024; // 2MB
-    if (file.size > maxBytes) {
-      setPhotoError("Image is too large. Max size is 2MB.");
-      e.target.value = "";
-      return;
-    }
-
-    // Convert to base64 data URL for preview + send
-    const asDataUrl = await fileToDataUrl(file);
-    setPhotoPreview(asDataUrl);
-    setFormData((prev) => ({ ...prev, Lawyer_Photo: asDataUrl }));
-  };
-
-  const removePhoto = () => {
-    setPhotoPreview("");
-    setFormData((prev) => ({ ...prev, Lawyer_Photo: "" }));
-    setPhotoError("");
-  };
-
-  function fileToDataUrl(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result));
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
-  // --- End photo handling ---
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -92,7 +50,6 @@ function LawyerManagement() {
       await updateLawyer(Number(editingId), updateData);
       setEditingId(null);
     } else {
-      // Don't send Lawyer_ID on create
       const { Lawyer_ID, ...dataToCreate } = formData;
       await createLawyer(dataToCreate);
     }
@@ -148,7 +105,7 @@ function LawyerManagement() {
 
   return (
     <>
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full mb-8">
+      <div className="bg-white rounded-lg p-8 shadow-lg w-full">
         <h2 className="mb-5 text-[#83B582] text-xl font-semibold">
           {editingId ? "Edit Lawyer" : "Register New Lawyer"}
         </h2>
@@ -169,7 +126,7 @@ function LawyerManagement() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} noValidate>
+        <form id="lawyerForm" className="border-bottom" noValidate onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Name */}
             <div>
@@ -178,7 +135,7 @@ function LawyerManagement() {
                 name="Lawyer_Name"
                 value={formData.Lawyer_Name}
                 onChange={handleChange}
-                className={`form-control w-full border rounded px-3 py-2 ${
+                className={`form-control w-full border rounded px-3 py-2 focus:border-black focus:shadow-none ${
                   formError && !formData.Lawyer_Name.trim()
                     ? "border-red-500"
                     : "border-gray-300"
@@ -199,7 +156,7 @@ function LawyerManagement() {
                 name="Lawyer_Address"
                 value={formData.Lawyer_Address}
                 onChange={handleChange}
-                className={`form-control w-full border rounded px-3 py-2 ${
+                className={`form-control w-full border rounded px-3 py-2 focus:border-black focus:shadow-none ${
                   formError && !formData.Lawyer_Address.trim()
                     ? "border-red-500"
                     : "border-gray-300"
@@ -220,7 +177,7 @@ function LawyerManagement() {
                 name="Lawyer_Phone"
                 value={formData.Lawyer_Phone}
                 onChange={handleChange}
-                className={`form-control w-full border rounded px-3 py-2 ${
+                className={`form-control w-full border rounded px-3 py-2 focus:border-black focus:shadow-none ${
                   formError && !formData.Lawyer_Phone.trim()
                     ? "border-red-500"
                     : "border-gray-300"
@@ -240,7 +197,7 @@ function LawyerManagement() {
                 name="Lawyer_Type"
                 value={formData.Lawyer_Type}
                 onChange={handleChange}
-                className={`form-control w-full border rounded px-3 py-2 ${
+                className={`form-control w-full border rounded px-3 py-2 focus:border-black focus:shadow-none ${
                   formError && !formData.Lawyer_Type.trim()
                     ? "border-red-500"
                     : "border-gray-300"
@@ -303,14 +260,12 @@ function LawyerManagement() {
 
           <button
             type="submit"
-            className="mt-4 px-6 py-2 bg-[#83B582] text-white font-semibold rounded hover:bg-[#55a754] flex items-center gap-2 border-none"
+            className="my-4 px-6 py-2 bg-[#83B582] text-white font-semibold rounded hover:bg-[#55a754] flex items-center gap-2 border-none"
           >
             {editingId ? "Update Lawyer" : "Register Lawyer"}
           </button>
         </form>
-      </div>
 
-      {/* Search */}
       <div className="flex justify-between items-center mb-4">
         <input
           type="text"
@@ -321,14 +276,12 @@ function LawyerManagement() {
         />
       </div>
 
-      {/* Table */}
       <div className="overflow-x-auto">
         <table className="min-w-full border rounded-lg overflow-hidden bg-white shadow">
           <thead className="bg-[#83B582] text-white w-full">
             <tr>
               <th className="px-4 py-2 w-1/12">ID</th>
               <th className="px-4 py-2 w-2/12">Name</th>
-              <th className="px-4 py-2 w-1/12">Photo</th>
               <th className="px-4 py-2 w-3/12">Address</th>
               <th className="px-4 py-2 w-2/12">Phone</th>
               <th className="px-4 py-2 w-1/12">Type</th>
@@ -338,7 +291,7 @@ function LawyerManagement() {
           <tbody>
             {filteredLawyers.length === 0 ? (
               <tr>
-                <td colSpan="7" className="text-center text-gray-500 py-4">
+                <td colSpan="6" className="text-center text-gray-500 py-4">
                   No lawyers found.
                 </td>
               </tr>
@@ -347,19 +300,6 @@ function LawyerManagement() {
                 <tr key={lawyer.Lawyer_ID} className="border-t">
                   <td className="px-4 py-2">{lawyer.Lawyer_ID}</td>
                   <td className="px-4 py-2">{lawyer.Lawyer_Name}</td>
-                  <td className="px-4 py-2">
-                    {lawyer.Lawyer_Photo ? (
-                      <img
-                        src={lawyer.Lawyer_Photo}
-                        alt={`${lawyer.Lawyer_Name} avatar`}
-                        className="w-10 h-10 rounded-full object-cover border inline-block"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-xs">
-                        N/A
-                      </div>
-                    )}
-                  </td>
                   <td className="px-4 py-2">{lawyer.Lawyer_Address}</td>
                   <td className="px-4 py-2">{lawyer.Lawyer_Phone}</td>
                   <td className="px-4 py-2">{lawyer.Lawyer_Type}</td>
@@ -383,7 +323,7 @@ function LawyerManagement() {
           </tbody>
         </table>
       </div>
-    </>
+      </>
   );
 }
 
