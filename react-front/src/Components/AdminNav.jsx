@@ -10,37 +10,37 @@ function AdminNav() {
       </div>
       <div className="flex flex-col gap-2 px-2">
         <Link
-          to="/dashboard"
+          to="/admin/dashboard"
           className="hover:bg-[#55a754] rounded flex items-center text-white pl-7 py-3 !no-underline"
         >
           <i className="bi bi-speedometer2 mr-2"></i> Dashboard
         </Link>
          <Link
-          to="/adminmanagement"
+          to="/admin/adminmanagement"
           className="hover:bg-[#55a754] rounded flex items-center text-white pl-7 py-3 !no-underline"
         >
           <i className="bi bi-person-badge"></i> Admin
         </Link>
         <Link
-          to="/lawyermanagement"
+          to="/admin/lawyermanagement"
           className="hover:bg-[#55a754] rounded flex items-center text-white pl-7 py-3 !no-underline"
         >
           <i className="bi bi-people mr-2"></i> Lawyer
         </Link>
         <Link
-          to="/lawbookmanagement"
+          to="/admin/lawbookmanagement"
           className="hover:bg-[#55a754] rounded flex items-center text-white pl-7 py-3 !no-underline"
         >
           <i className="bi bi-book mr-2"></i> LawBook
         </Link>
         <Link
-          to="/lawyerschedulemanagement"
+          to="/admin/lawyerschedulemanagement"
           className="hover:bg-[#55a754] rounded flex items-center text-white pl-7 py-3 !no-underline"
         >
           <i className="bi bi-file-earmark-text mr-2"></i> Schedule
         </Link>
         <Link
-          to="/settings"
+          to="/admin/settings"
           className="hover:bg-[#55a754] rounded flex items-center text-white pl-7 py-3 !no-underline"
         >
           <i className="bi bi-gear mr-2"></i> Settings

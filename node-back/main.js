@@ -7,6 +7,7 @@ const mongourl =
   "mongodb+srv://Project:P4ter2442@project.valhjwp.mongodb.net/?retryWrites=true&w=majority&appName=Project";
 
 const lawyerRoutes = require("./routes/LawyerRoutes");
+const LawyerScheduleRoutes = require("./routes/LawyerSchedules");
 
 mongoose
   .connect(mongourl)
@@ -22,3 +23,4 @@ mongoose
 app.use(cors());
 app.use(express.json());
 app.use("/api/lawyers", lawyerRoutes);
+app.use("/api/lawyerschedules", LawyerScheduleRoutes);

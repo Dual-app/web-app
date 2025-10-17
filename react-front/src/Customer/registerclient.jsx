@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 const EMAIL_RX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const STRONG_PW_RX =
@@ -19,14 +18,14 @@ function PhoneInput({ value, onChange, ...rest }) {
       onChange={(e) => onChange(format(e.target.value))}
       inputMode="numeric"
       maxLength={12}
-      className={`w-full rounded border px-3 py-2 focus:outline-none focus:border-[#83B582] ${rest.className || ""}`}
+      className={`w-full rounded border px-3 py-2 focus:outline-none focus:border-[#83B582] ${
+        rest.className || ""
+      }`}
     />
   );
 }
 
-export default function Register() {
-  const navigate = useNavigate();
-
+export default function RegisterModal({ open, onClose }) {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -37,6 +36,8 @@ export default function Register() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [errs, setErrs] = useState({});
   const [success, setSuccess] = useState(false);
+
+  if (!open) return null; // prevent rendering when closed ✅
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -65,7 +66,8 @@ export default function Register() {
     if (Object.keys(next).length === 0) {
       setSuccess(true);
       setTimeout(() => {
-        navigate("/"); // redirect to Home
+        onClose?.(); // ✅ close modal after success
+        window.location.href = "/"; // redirect to home (or login)
       }, 2500);
     }
   }
@@ -77,7 +79,7 @@ export default function Register() {
         <div className="flex items-center justify-between border-b px-4 py-3">
           <h3 className="w-full text-center text-xl font-semibold">Register</h3>
           <button
-            onClick={() => navigate(-1)}
+            onClick={onClose} // ✅ fixed close action
             className="ml-2 inline-flex h-8 w-8 items-center justify-center rounded hover:bg-gray-100"
             aria-label="Close"
           >
@@ -93,6 +95,7 @@ export default function Register() {
           </button>
         </div>
 
+        {/* Success message */}
         {success ? (
           <div className="px-6 py-10 text-center">
             <div className="mx-auto mb-4 h-14 w-14 rounded-full bg-green-100 flex items-center justify-center">

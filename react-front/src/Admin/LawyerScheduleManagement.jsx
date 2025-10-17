@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { useLawyerSchedule } from "../hooks/LawyerScheduleHook";
+import { useLawyer } from "../hooks/LawyerHook";
 
 /**
  * Notify AdminTop via a window event.
@@ -12,19 +14,13 @@ function notify(type, title, message, href) {
   );
 }
 
-const LAWYERS = [
-  { id: "1", name: "John Doe" },
-  { id: "2", name: "Mary Johnson" },
-  { id: "3", name: "David Smith" },
-];
-
 // Office window + lunch (in minutes after midnight)
-const OFFICE_START = 9 * 60;      // 09:00
-const OFFICE_END = 16 * 60;       // 16:00
-const LUNCH_START = 12 * 60;      // 12:00
-const LUNCH_END = 12 * 60 + 45;   // 12:45
+const OFFICE_START = 9 * 60; // 09:00
+const OFFICE_END = 16 * 60; // 16:00
+const LUNCH_START = 12 * 60; // 12:00
+const LUNCH_END = 12 * 60 + 45; // 12:45
 
-export default function LawyerScheduleManagement() {
+function LawyerScheduleManagement() {
   const [formData, setFormData] = useState({
     lawyer: "",
     date: "",
@@ -32,17 +28,17 @@ export default function LawyerScheduleManagement() {
     endTime: "",
   });
 
+  // fetch lawyers for dropdown
+  const { lawyers } = useLawyer();
+  const LAWYERS = lawyers.map((l) => ({ id: l._id, name: l.Lawyer_Name }));
+
+  const { schedules, createSchedule, deleteSchedule, fetchSchedules, error } =
+    useLawyerSchedule();
+  const [editingId, setEditingId] = useState(null);
   const [formError, setFormError] = useState(false);
   const [timeError, setTimeError] = useState("");
   const [dateError, setDateError] = useState("");
   const [conflictError, setConflictError] = useState("");
-
-  const [schedules, setSchedules] = useState([
-    // demo rows
-    { id: 1, lawyer: "1", date: "2025-09-08", startTime: "10:00", endTime: "12:00", status: "Available" },
-    { id: 2, lawyer: "2", date: "2025-09-09", startTime: "14:00", endTime: "16:00", status: "Available" },
-  ]);
-
   const [search, setSearch] = useState("");
   const [filterDate, setFilterDate] = useState("");
   const [filterLawyer, setFilterLawyer] = useState("");
@@ -69,7 +65,8 @@ export default function LawyerScheduleManagement() {
     // any overlap with [LUNCH_START, LUNCH_END)
     !(endMins <= LUNCH_START || startMins >= LUNCH_END);
 
-  const overlaps = (aStart, aEnd, bStart, bEnd) => aStart < bEnd && aEnd > bStart;
+  const overlaps = (aStart, aEnd, bStart, bEnd) =>
+    aStart < bEnd && aEnd > bStart;
 
   const hasScheduleConflict = (lawyer, date, startMins, endMins) => {
     return schedules.some((s) => {
@@ -90,15 +87,20 @@ export default function LawyerScheduleManagement() {
     if (conflictError) setConflictError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const { lawyer, date, startTime, endTime } = formData;
 
-    // Required
-    if (!lawyer || !date || !startTime || !endTime) {
+    if (
+      !formData.lawyer.trim() ||
+      !formData.date.trim() ||
+      !formData.startTime.trim() ||
+      !formData.endTime.trim()
+    ) {
       setFormError(true);
       return;
     }
+
+    const { lawyer, date, startTime, endTime } = formData;
 
     // Date must be today or later
     if (date < todayStr) {
@@ -129,27 +131,34 @@ export default function LawyerScheduleManagement() {
 
     // Conflict check (same lawyer + date + overlap)
     if (hasScheduleConflict(lawyer, date, startMins, endMins)) {
-      const lawName = LAWYERS.find((l) => l.id === lawyer)?.name || `Lawyer #${lawyer}`;
-      const msg = `${lawName} already has a schedule overlapping ${startTime}–${endTime} on ${date}. Please choose another time or date.`;
-      setConflictError(msg);
-      alert(msg); // message box
+      setConflictError("This schedule conflicts with an existing booking.");
       return;
     }
 
-    // Save (mock: add to local state)
-    const newId = Date.now();
-    const newRow = {
-      id: newId,
-      lawyer,
-      date,
-      startTime,
-      endTime,
-      status: "Available",
-    };
-    setSchedules((prev) => [newRow, ...prev]);
+    if (editingId) {
+      // Update existing schedule
+      await updateSchedule(editingId, {
+        lawyer,
+        date,
+        startTime,
+        endTime,
+        status: "Available",
+      });
+      setEditingId(null);
+    } else {
+      // Create new schedule
+      await createSchedule({
+        Lawyer_ID: formData.lawyer, // ✅ match backend key
+        Available_Date: formData.date,
+        Start_Time: formData.startTime,
+        End_Time: formData.endTime,
+        Status: "Available",
+      });
+    }
 
     // 🔔 Notify AdminTop
-    const law = LAWYERS.find((l) => l.id === lawyer)?.name || `Lawyer #${lawyer}`;
+    const law =
+      LAWYERS.find((l) => l.id === lawyer)?.name || `Lawyer #${lawyer}`;
     notify(
       "schedule",
       "New Schedule Added",
@@ -158,16 +167,29 @@ export default function LawyerScheduleManagement() {
     );
 
     // Reset form + errors
-    setFormData({ lawyer: "", date: "", startTime: "", endTime: "" });
+    setFormData({
+      lawyer: "",
+      date: "",
+      startTime: "",
+      endTime: "",
+    });
     setFormError(false);
     setDateError("");
     setTimeError("");
     setConflictError("");
+    fetchSchedules();
   };
 
-  const handleDelete = (rowId) => {
-    if (!window.confirm("Delete this schedule?")) return;
-    setSchedules((prev) => prev.filter((r) => r.id !== rowId));
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this schedule?")) {
+      await deleteSchedule(id);
+      notify(
+        "schedule",
+        "Schedule Deleted",
+        `Schedule ID ${id} has been deleted.`,
+        "/admin/schedules"
+      );
+    }
   };
 
   const handleEdit = (row) => {
@@ -183,19 +205,30 @@ export default function LawyerScheduleManagement() {
   const lawyerName = (id) => LAWYERS.find((l) => l.id === id)?.name || id;
 
   const filtered = schedules.filter((s) => {
+    const lawyerNameStr = s.Lawyer_ID?.Lawyer_Name?.toLowerCase() || "";
     const matchSearch =
-      !search ||
-      lawyerName(s.lawyer).toLowerCase().includes(search.toLowerCase());
-    const matchDate = !filterDate || s.date === filterDate;
-    const matchLawyer = !filterLawyer || lawyerName(s.lawyer) === filterLawyer;
+      !search || lawyerNameStr.includes((search || "").toLowerCase());
+
+    const matchDate =
+      !filterDate || s.Available_Date?.split("T")[0] === filterDate; // removes time part if ISO date
+
+    const matchLawyer = !filterLawyer || s.Lawyer_ID?._id === filterLawyer;
+
     return matchSearch && matchDate && matchLawyer;
   });
 
   return (
     <div className="bg-white rounded-lg p-8 shadow-lg w-full">
-      <h2 className="mb-5 text-[#83B582] text-xl font-semibold">Register Lawyer’s Schedule</h2>
+      <h2 className="mb-5 text-[#83B582] text-xl font-semibold">
+        Register Lawyer’s Schedule
+      </h2>
 
-      <form className="mb-2" id="scheduleForm" noValidate onSubmit={handleSubmit}>
+      <form
+        className="mb-2"
+        id="scheduleForm"
+        noValidate
+        onSubmit={handleSubmit}
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Lawyer */}
           <div>
@@ -205,16 +238,22 @@ export default function LawyerScheduleManagement() {
               value={formData.lawyer}
               onChange={handleChange}
               className={`form-control w-full border rounded px-3 py-2 focus:border-black focus:shadow-none ${
-                formError && !formData.lawyer ? "border-red-500" : "border-gray-300"
+                formError && !formData.lawyer
+                  ? "border-red-500"
+                  : "border-gray-300"
               }`}
             >
               <option value="">Select Lawyer</option>
               {LAWYERS.map((l) => (
-                <option key={l.id} value={l.id}>{l.name}</option>
+                <option key={l.id} value={l.id}>
+                  {l.name}
+                </option>
               ))}
             </select>
             {formError && !formData.lawyer && (
-              <small className="text-sm text-[#d9534f]">Please select a lawyer.</small>
+              <small className="text-sm text-[#d9534f]">
+                Please select a lawyer.
+              </small>
             )}
           </div>
 
@@ -228,13 +267,19 @@ export default function LawyerScheduleManagement() {
               onChange={handleChange}
               min={todayStr}
               className={`form-control w-full border rounded px-3 py-2 focus:border-black focus:shadow-none ${
-                (formError && !formData.date) || dateError ? "border-red-500" : "border-gray-300"
+                (formError && !formData.date) || dateError
+                  ? "border-red-500"
+                  : "border-gray-300"
               }`}
             />
             {formError && !formData.date && (
-              <small className="text-sm text-[#d9534f]">Date is required.</small>
+              <small className="text-sm text-[#d9534f]">
+                Date is required.
+              </small>
             )}
-            {dateError && <small className="text-sm text-[#d9534f]">{dateError}</small>}
+            {dateError && (
+              <small className="text-sm text-[#d9534f]">{dateError}</small>
+            )}
           </div>
 
           {/* Start */}
@@ -249,11 +294,15 @@ export default function LawyerScheduleManagement() {
               max="16:00"
               step="300" /* 5-min steps; adjust if you want 15 = 900 */
               className={`form-control w-full border rounded px-3 py-2 focus:border-black focus:shadow-none ${
-                formError && !formData.startTime ? "border-red-500" : "border-gray-300"
+                formError && !formData.startTime
+                  ? "border-red-500"
+                  : "border-gray-300"
               }`}
             />
             {formError && !formData.startTime && (
-              <small className="text-sm text-[#d9534f]">Start time is required.</small>
+              <small className="text-sm text-[#d9534f]">
+                Start time is required.
+              </small>
             )}
           </div>
 
@@ -269,13 +318,19 @@ export default function LawyerScheduleManagement() {
               max="16:00"
               step="300"
               className={`form-control w-full border rounded px-3 py-2 focus:border-black focus:shadow-none ${
-                (formError && !formData.endTime) || timeError ? "border-red-500" : "border-gray-300"
+                (formError && !formData.endTime) || timeError
+                  ? "border-red-500"
+                  : "border-gray-300"
               }`}
             />
             {formError && !formData.endTime && (
-              <small className="text-sm text-[#d9534f]">End time is required.</small>
+              <small className="text-sm text-[#d9534f]">
+                End time is required.
+              </small>
             )}
-            {timeError && <small className="text-sm text-[#d9534f]">{timeError}</small>}
+            {timeError && (
+              <small className="text-sm text-[#d9534f]">{timeError}</small>
+            )}
           </div>
 
           {/* Conflict inline message (if any) */}
@@ -315,7 +370,9 @@ export default function LawyerScheduleManagement() {
           >
             <option value="">Filter by Date</option>
             {[...new Set(schedules.map((s) => s.date))].map((d) => (
-              <option key={d} value={d}>{d}</option>
+              <option key={d} value={d}>
+                {d}
+              </option>
             ))}
           </select>
           <select
@@ -326,7 +383,9 @@ export default function LawyerScheduleManagement() {
           >
             <option value="">Filter by Lawyer</option>
             {LAWYERS.map((l) => (
-              <option key={l.id} value={l.name}>{l.name}</option>
+              <option key={l.id} value={l.id}>
+                {l.name}
+              </option>
             ))}
           </select>
         </div>
@@ -337,12 +396,12 @@ export default function LawyerScheduleManagement() {
         <table className="min-w-full border rounded-lg overflow-hidden">
           <thead className="bg-[#83B582] text-white">
             <tr>
-              <th className="px-4 py-2 text-left">Lawyer</th>
-              <th className="px-4 py-2 text-left">Date</th>
-              <th className="px-4 py-2 text-left">Start Time</th>
-              <th className="px-4 py-2 text-left">End Time</th>
-              <th className="px-4 py-2 text-left">Status</th>
-              <th className="px-4 py-2 text-left">Actions</th>
+              <th className="px-4 py-2 w-2/12">Lawyer</th>
+              <th className="px-4 py-2 w-2/12">Date</th>
+              <th className="px-4 py-2 w-2/12">Start Time</th>
+              <th className="px-4 py-2 w-2/12">End Time</th>
+              <th className="px-4 py-2 w-1/12">Status</th>
+              <th className="px-4 py-2 w-3/12">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -354,12 +413,14 @@ export default function LawyerScheduleManagement() {
               </tr>
             ) : (
               filtered.map((row) => (
-                <tr key={row.id} className="border-t">
-                  <td className="px-4 py-2">{lawyerName(row.lawyer)}</td>
-                  <td className="px-4 py-2">{row.date}</td>
-                  <td className="px-4 py-2">{row.startTime}</td>
-                  <td className="px-4 py-2">{row.endTime}</td>
-                  <td className="px-4 py-2">{row.status}</td>
+                <tr key={row.Schedule_ID} className="border-t">
+                  <td className="px-4 py-2">
+                    {lawyerName(row.Lawyer_ID.Lawyer_Name)}
+                  </td>
+                  <td className="px-4 py-2">{row.Available_Date}</td>
+                  <td className="px-4 py-2">{row.Start_Time}</td>
+                  <td className="px-4 py-2">{row.End_Time}</td>
+                  <td className="px-4 py-2">{row.Status}</td>
                   <td className="px-4 py-2">
                     <div className="flex gap-2 items-center">
                       <button
@@ -370,7 +431,7 @@ export default function LawyerScheduleManagement() {
                       </button>
                       <button
                         className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
-                        onClick={() => handleDelete(row.id)}
+                        onClick={() => handleDelete(row.Schedule_ID)}
                       >
                         Delete
                       </button>
@@ -385,3 +446,5 @@ export default function LawyerScheduleManagement() {
     </div>
   );
 }
+
+export default LawyerScheduleManagement;
