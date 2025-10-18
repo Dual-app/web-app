@@ -6,11 +6,15 @@ import LawyerManagement from "../Admin/LawyerManagement";
 import LawBookManagement from "../Admin/LawBookManagement";
 import LawyerScheduleManagement from "../Admin/LawyerScheduleManagement";
 import AdminManagement from "../Admin/AdminManagement";
+import CustomerLayout from "../customerlayout";
+import AboutUs from "../Customer/aboutus";
+import Lawbook from "../Customer/lawbook";
+import Lawyer from "../Customer/lawyer";
 
-// 🧠 Simulate logged-in role
-const userRole = "admin"; // Change between "admin" and "customer" for testing
+// Simulate logged-in role
+const userRole = "customer";
 
-// ✅ Route protection components
+// Route protection components
 function ProtectedAdmin({ children }) {
   return userRole === "admin" ? children : <Navigate to="/" replace />;
 }
@@ -25,24 +29,19 @@ const router = createBrowserRouter([
     element: <Home />,
   },
 
-  // 🟢 CUSTOMER AREA
+  // CUSTOMER AREA
   {
     path: "/customer",
     element: (
       <ProtectedCustomer>
-        <Home /> {/* You can replace with CustomerLayout later */}
+        <CustomerLayout />
       </ProtectedCustomer>
     ),
     children: [
       { index: true, element: <Navigate to="home" replace /> },
-      {
-        path: "home",
-        element: (
-          <ProtectedCustomer>
-            <Home />
-          </ProtectedCustomer>
-        ),
-      },
+      { path: "aboutus", element: <AboutUs /> },
+      { path: "lawbook", element: <Lawbook /> },
+      { path: "lawyer", element: <Lawyer /> },
     ],
   },
 
@@ -56,11 +55,46 @@ const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <Navigate to="dashboard" replace /> },
-      { path: "dashboard", element: <ProtectedAdmin><Dashboard /></ProtectedAdmin> },
-      { path: "lawyermanagement", element: <ProtectedAdmin><LawyerManagement /></ProtectedAdmin> },
-      { path: "lawbookmanagement", element: <ProtectedAdmin><LawBookManagement /></ProtectedAdmin> },
-      { path: "lawyerschedulemanagement", element: <ProtectedAdmin><LawyerScheduleManagement /></ProtectedAdmin> },
-      { path: "adminmanagement", element: <ProtectedAdmin><AdminManagement /></ProtectedAdmin> },
+      {
+        path: "dashboard",
+        element: (
+          <ProtectedAdmin>
+            <Dashboard />
+          </ProtectedAdmin>
+        ),
+      },
+      {
+        path: "lawyermanagement",
+        element: (
+          <ProtectedAdmin>
+            <LawyerManagement />
+          </ProtectedAdmin>
+        ),
+      },
+      {
+        path: "lawbookmanagement",
+        element: (
+          <ProtectedAdmin>
+            <LawBookManagement />
+          </ProtectedAdmin>
+        ),
+      },
+      {
+        path: "lawyerschedulemanagement",
+        element: (
+          <ProtectedAdmin>
+            <LawyerScheduleManagement />
+          </ProtectedAdmin>
+        ),
+      },
+      {
+        path: "adminmanagement",
+        element: (
+          <ProtectedAdmin>
+            <AdminManagement />
+          </ProtectedAdmin>
+        ),
+      },
     ],
   },
 
