@@ -11,6 +11,10 @@ function LawBookManagement() {
 
   const [formError, setFormError] = useState({}); // store errors
 
+  const [books, setBooks] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [editingIndex, setEditingIndex] = useState(null);
+
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "file") {
@@ -23,6 +27,7 @@ function LawBookManagement() {
     setFormError((prev) => ({ ...prev, [name]: "" }));
   };
 
+  // Handle form submission (Add / Update)
   const handleSubmit = (e) => {
     e.preventDefault();
     let errors = {};
@@ -36,10 +41,17 @@ function LawBookManagement() {
     if (Object.keys(errors).length > 0) {
       setFormError(errors);
       return;
-    }~
+    }
 
-    // Submit logic here
-    console.log("Form submitted", formData);
+    //  Add or Update book
+    if (editingIndex !== null) {
+      const updatedBooks = [...books];
+      updatedBooks[editingIndex] = formData;
+      setBooks(updatedBooks);
+      setEditingIndex(null);
+    } else {
+      setBooks((prev) => [...prev, formData]);
+    }
 
     // Reset form
     setFormData({
@@ -51,6 +63,22 @@ function LawBookManagement() {
     });
     setFormError({});
   };
+
+  // 🗑️ Delete book
+  const handleDelete = (index) => {
+    setBooks((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // ✏️ Edit book
+  const handleEdit = (index) => {
+    setFormData(books[index]);
+    setEditingIndex(index);
+  };
+
+  // 🔍 Search filter (by title)
+  const filteredBooks = books.filter((book) =>
+    book.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <>
@@ -144,7 +172,7 @@ function LawBookManagement() {
             type="submit"
             className="my-4 px-6 py-2 bg-[#83B582] text-white font-semibold rounded hover:bg-[#55a754] flex items-center gap-2 border-none"
           >
-            Upload Book
+            {editingIndex !== null ? "Update Book" : "Upload Book"}
           </button>
         </form>
 
@@ -154,6 +182,8 @@ function LawBookManagement() {
             id="searchInput"
             className="form-control w-full md:w-1/4 border rounded px-3 py-2 focus:border-black focus:shadow-none"
             placeholder="Search by Title..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
           <div className="flex gap-2 w-full md:w-auto">
             <select
@@ -189,36 +219,39 @@ function LawBookManagement() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className="px-4 py-2">Criminal Law Basics</td>
-                <td className="px-4 py-2">Aung Min</td>
-                <td className="px-4 py-2">2020</td>
-                <td className="px-4 py-2">Criminal Law</td>
-                <td className="px-4 py-2">PDF</td>
-                <td className="px-4 py-2 flex gap-2">
-                  <button className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm">
-                    Edit
-                  </button>
-                  <button className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm">
-                    Delete
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2">Corporate Regulations</td>
-                <td className="px-4 py-2">Zaw Htet</td>
-                <td className="px-4 py-2">2022</td>
-                <td className="px-4 py-2">Corporate Law</td>
-                <td className="px-4 py-2">DOCX</td>
-                <td className="px-4 py-2 flex gap-2">
-                  <button className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm">
-                    Edit
-                  </button>
-                  <button className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm">
-                    Delete
-                  </button>
-                </td>
-              </tr>
+              {filteredBooks.length > 0 ? (
+                filteredBooks.map((book, index) => (
+                  <tr key={index}>
+                    <td className="px-4 py-2">{book.title}</td>
+                    <td className="px-4 py-2">{book.author}</td>
+                    <td className="px-4 py-2">{book.year}</td>
+                    <td className="px-4 py-2">{book.category}</td>
+                    <td className="px-4 py-2">
+                      {book.file?.name?.split(".").pop().toUpperCase()}
+                    </td>
+                    <td className="px-4 py-2 flex gap-2">
+                      <button
+                        onClick={() => handleEdit(index)}
+                        className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(index)}
+                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" className="text-center py-4 text-gray-500">
+                    No books found.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

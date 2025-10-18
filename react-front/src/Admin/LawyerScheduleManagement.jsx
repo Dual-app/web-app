@@ -136,7 +136,6 @@ function LawyerScheduleManagement() {
     }
 
     if (editingId) {
-      // Update existing schedule
       await updateSchedule(editingId, {
         lawyer,
         date,
@@ -148,7 +147,7 @@ function LawyerScheduleManagement() {
     } else {
       // Create new schedule
       await createSchedule({
-        Lawyer_ID: formData.lawyer, // ✅ match backend key
+        Lawyer_ID: formData.lawyer, 
         Available_Date: formData.date,
         Start_Time: formData.startTime,
         End_Time: formData.endTime,
