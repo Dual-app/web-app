@@ -33,7 +33,8 @@ export default function LoginModal({ open, onClose }) {
     const next = {};
 
     // Validate email
-    if (!EMAIL_RX.test(email.trim())) next.email = "Please enter a valid email.";
+    if (!EMAIL_RX.test(email.trim()))
+      next.email = "Please enter a valid email.";
 
     // Validate password
     if (!password.trim()) next.password = "Password is required.";
@@ -83,7 +84,11 @@ export default function LoginModal({ open, onClose }) {
                 fill="none"
                 stroke="currentColor"
               >
-                <path strokeWidth="2" strokeLinecap="round" d="M6 6l12 12M18 6L6 18" />
+                <path
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  d="M6 6l12 12M18 6L6 18"
+                />
               </svg>
             </button>
           </div>
@@ -126,7 +131,8 @@ export default function LoginModal({ open, onClose }) {
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
-                    if (errors.email) setErrors((p) => ({ ...p, email: undefined }));
+                    if (errors.email)
+                      setErrors((p) => ({ ...p, email: undefined }));
                   }}
                   placeholder="Enter your email"
                   className={`w-full rounded border px-3 py-2 focus:outline-none focus:border-[#83B582] ${
@@ -139,7 +145,7 @@ export default function LoginModal({ open, onClose }) {
               </div>
 
               {/* Password */}
-            <div className="mb-4">
+              <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Password
                 </label>
@@ -208,9 +214,16 @@ export default function LoginModal({ open, onClose }) {
 
               <div className="mt-3 text-center text-sm">
                 Don’t have an account?{" "}
-                <a href="/registerclient.jsx" className="text-[#1A3636] underline">
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose?.(); // Close login popup
+                    window.dispatchEvent(new CustomEvent("open-register")); // Open register popup
+                  }}
+                  className="text-[#1A3636] underline"
+                >
                   Register
-                </a>
+                </button>
               </div>
             </form>
           )}

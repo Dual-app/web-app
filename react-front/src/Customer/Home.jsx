@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import CustomerNav from "../Components/CustomerNav";
 
 export default function Home() {
@@ -32,18 +33,16 @@ export default function Home() {
               practical strategy and transparent communication.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <a
-                href="/lawyer.jsx"
+              <Link to="/customer/lawyer"
                 className="inline-block rounded bg-white px-4 py-2 text-sm font-medium text-black hover:opacity-90"
               >
                 View Lawyer
-              </a>
-              <a
-                href="/lawbookpg.jsx"
+              </Link>
+              <Link to="/customer/lawbook"
                 className="inline-block rounded bg-white px-4 py-2 text-sm font-medium text-black hover:opacity-90"
               >
                 Read Lawbook
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -213,5 +212,8 @@ export default function Home() {
     </div>
   );
 }
+
+
+
 
 

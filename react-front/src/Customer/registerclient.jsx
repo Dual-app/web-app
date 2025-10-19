@@ -37,7 +37,7 @@ export default function RegisterModal({ open, onClose }) {
   const [errs, setErrs] = useState({});
   const [success, setSuccess] = useState(false);
 
-  if (!open) return null; // prevent rendering when closed 
+  if (!open) return null; // prevent rendering when closed
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -90,7 +90,11 @@ export default function RegisterModal({ open, onClose }) {
               fill="none"
               stroke="currentColor"
             >
-              <path strokeWidth="2" strokeLinecap="round" d="M6 6l12 12M18 6L6 18" />
+              <path
+                strokeWidth="2"
+                strokeLinecap="round"
+                d="M6 6l12 12M18 6L6 18"
+              />
             </svg>
           </button>
         </div>
@@ -125,7 +129,9 @@ export default function RegisterModal({ open, onClose }) {
           <form onSubmit={handleSubmit} className="px-4 py-4">
             {/* Full Name */}
             <div className="mb-3">
-              <label className="mb-1 block text-sm text-gray-600">Full Name</label>
+              <label className="mb-1 block text-sm text-gray-600">
+                Full Name
+              </label>
               <input
                 type="text"
                 value={fullName}
@@ -170,122 +176,123 @@ export default function RegisterModal({ open, onClose }) {
               )}
             </div>
 
-        {/* Password */}
-<div className="mb-3">
-  <label className="mb-1 block text-sm text-gray-600">Password</label>
-  <div className="relative">
-    <input
-      type={showPw ? "text" : "password"}
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-      placeholder="Password"
-      className={`w-full rounded border px-3 py-2 pr-10 focus:outline-none focus:border-[#83B582] ${
-        errs.password ? "border-red-500" : "border-gray-300"
-      }`}
-    />
-    <button
-      type="button"
-      onClick={() => setShowPw((v) => !v)}
-      className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-700 hover:bg-gray-100"
-    >
-      {showPw ? (
-        // Eye open icon
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeWidth="2"
-            d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.065 7-9.542 7s-8.268-2.943-9.542-7z"
-          />
-          <circle cx="12" cy="12" r="3" strokeWidth="2" />
-        </svg>
-      ) : (
-        // Eye slash icon
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeWidth="2"
-            d="M3 3l18 18M10.584 10.59A3 3 0 0115 12c0 .79-.31 1.5-.816 2.03M9 9a3 3 0 014.243-2.828M6.42 6.42C4.57 7.6 3.27 9.29 2.458 12 3.732 16.057 7.523 19 12 19c1.44 0 2.81-.27 4.06-.76"
-          />
-        </svg>
-      )}
-    </button>
-  </div>
-  {errs.password && (
-    <p className="mt-1 text-sm text-red-600">{errs.password}</p>
-  )}
-</div>
+            {/* Password */}
+            <div className="mb-3">
+              <label className="mb-1 block text-sm text-gray-600">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPw ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Password"
+                  className={`w-full rounded border px-3 py-2 pr-10 focus:outline-none focus:border-[#83B582] ${
+                    errs.password ? "border-red-500" : "border-gray-300"
+                  }`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPw((v) => !v)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-700 hover:bg-gray-100"
+                >
+                  {showPw ? (
+                    // Eye open icon
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeWidth="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.065 7-9.542 7s-8.268-2.943-9.542-7z"
+                      />
+                      <circle cx="12" cy="12" r="3" strokeWidth="2" />
+                    </svg>
+                  ) : (
+                    // Eye slash icon
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeWidth="2"
+                        d="M3 3l18 18M10.584 10.59A3 3 0 0115 12c0 .79-.31 1.5-.816 2.03M9 9a3 3 0 014.243-2.828M6.42 6.42C4.57 7.6 3.27 9.29 2.458 12 3.732 16.057 7.523 19 12 19c1.44 0 2.81-.27 4.06-.76"
+                      />
+                    </svg>
+                  )}
+                </button>
+              </div>
+              {errs.password && (
+                <p className="mt-1 text-sm text-red-600">{errs.password}</p>
+              )}
+            </div>
 
-{/* Confirm Password */}
-<div className="mb-3">
-  <label className="mb-1 block text-sm text-gray-600">
-    Confirm Password
-  </label>
-  <div className="relative">
-    <input
-      type={showConfirm ? "text" : "password"}
-      value={confirm}
-      onChange={(e) => setConfirm(e.target.value)}
-      placeholder="Confirm Password"
-      className={`w-full rounded border px-3 py-2 pr-10 focus:outline-none focus:border-[#83B582] ${
-        errs.confirm ? "border-red-500" : "border-gray-300"
-      }`}
-    />
-    <button
-      type="button"
-      onClick={() => setShowConfirm((v) => !v)}
-      className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-700 hover:bg-gray-100"
-    >
-      {showConfirm ? (
-        // Eye open icon
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeWidth="2"
-            d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.065 7-9.542 7s-8.268-2.943-9.542-7z"
-          />
-          <circle cx="12" cy="12" r="3" strokeWidth="2" />
-        </svg>
-      ) : (
-        // Eye slash icon
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeWidth="2"
-            d="M3 3l18 18M10.584 10.59A3 3 0 0115 12c0 .79-.31 1.5-.816 2.03M9 9a3 3 0 014.243-2.828M6.42 6.42C4.57 7.6 3.27 9.29 2.458 12 3.732 16.057 7.523 19 12 19c1.44 0 2.81-.27 4.06-.76"
-          />
-        </svg>
-      )}
-    </button>
-  </div>
-  {errs.confirm && (
-    <p className="mt-1 text-sm text-red-600">{errs.confirm}</p>
-  )}
-</div>
-
+            {/* Confirm Password */}
+            <div className="mb-3">
+              <label className="mb-1 block text-sm text-gray-600">
+                Confirm Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showConfirm ? "text" : "password"}
+                  value={confirm}
+                  onChange={(e) => setConfirm(e.target.value)}
+                  placeholder="Confirm Password"
+                  className={`w-full rounded border px-3 py-2 pr-10 focus:outline-none focus:border-[#83B582] ${
+                    errs.confirm ? "border-red-500" : "border-gray-300"
+                  }`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm((v) => !v)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-700 hover:bg-gray-100"
+                >
+                  {showConfirm ? (
+                    // Eye open icon
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeWidth="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.065 7-9.542 7s-8.268-2.943-9.542-7z"
+                      />
+                      <circle cx="12" cy="12" r="3" strokeWidth="2" />
+                    </svg>
+                  ) : (
+                    // Eye slash icon
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeWidth="2"
+                        d="M3 3l18 18M10.584 10.59A3 3 0 0115 12c0 .79-.31 1.5-.816 2.03M9 9a3 3 0 014.243-2.828M6.42 6.42C4.57 7.6 3.27 9.29 2.458 12 3.732 16.057 7.523 19 12 19c1.44 0 2.81-.27 4.06-.76"
+                      />
+                    </svg>
+                  )}
+                </button>
+              </div>
+              {errs.confirm && (
+                <p className="mt-1 text-sm text-red-600">{errs.confirm}</p>
+              )}
+            </div>
 
             {/* Terms */}
             <div className="mb-3">
@@ -317,9 +324,16 @@ export default function RegisterModal({ open, onClose }) {
 
             <div className="mt-3 text-center text-sm">
               Already have an account?{" "}
-              <a href="/loginclient" className="text-[#1A3636] underline">
+              <button
+                type="button"
+                onClick={() => {
+                  onClose?.(); // Close register popup
+                  window.dispatchEvent(new CustomEvent("open-login")); // Open login popup
+                }}
+                className="text-[#1A3636] underline"
+              >
                 Login
-              </a>
+              </button>
             </div>
           </form>
         )}

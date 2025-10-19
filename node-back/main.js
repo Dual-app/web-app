@@ -8,6 +8,7 @@ const mongourl =
 
 const lawyerRoutes = require("./routes/LawyerRoutes");
 const LawyerScheduleRoutes = require("./routes/LawyerSchedules");
+const AdminRoutes = require("./routes/AdminRoutes");
 
 mongoose
   .connect(mongourl)
@@ -24,3 +25,4 @@ app.use(cors());
 app.use(express.json());
 app.use("/api/lawyers", lawyerRoutes);
 app.use("/api/lawyerschedules", LawyerScheduleRoutes);
+app.use("/api/admins", AdminRoutes);

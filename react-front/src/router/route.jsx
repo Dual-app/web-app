@@ -6,24 +6,39 @@ import LawyerManagement from "../Admin/LawyerManagement";
 import LawBookManagement from "../Admin/LawBookManagement";
 import LawyerScheduleManagement from "../Admin/LawyerScheduleManagement";
 import AdminManagement from "../Admin/AdminManagement";
+import AdminError from "../Admin/AdminError";
 import CustomerLayout from "../customerlayout";
 import AboutUs from "../Customer/aboutus";
 import Lawbook from "../Customer/lawbook";
 import Lawyer from "../Customer/lawyer";
+import Topup from "../Customer/topuppg";
 
 // Simulate logged-in role
-const userRole = "customer";
+const userRole = "superadmin"; // can be 'admin', 'superadmin', or 'customer'
 
 // Route protection components
 function ProtectedAdmin({ children }) {
-  return userRole === "admin" ? children : <Navigate to="/" replace />;
+  return userRole === "admin" || userRole === "superadmin" ? (
+    children
+  ) : (
+    <Navigate to="/" replace />
+  );
 }
+
 function ProtectedCustomer({ children }) {
-  return userRole === "customer" ? children : <Navigate to="/" replace />;
+  return ["admin", "customer", "superadmin"].includes(userRole) ? (
+    children
+  ) : (
+    <Navigate to="/" replace />
+  );
+}
+
+function ProtectedSuperAdmin({ children }) {
+  return userRole === "superadmin" ? children : <AdminError />;
 }
 
 const router = createBrowserRouter([
-  // HOME (shared for both roles)
+  // HOME
   {
     path: "/",
     element: <Home />,
@@ -42,10 +57,11 @@ const router = createBrowserRouter([
       { path: "aboutus", element: <AboutUs /> },
       { path: "lawbook", element: <Lawbook /> },
       { path: "lawyer", element: <Lawyer /> },
+      { path: "topuppg", element: <Topup /> },
     ],
   },
 
-  // 🔵 ADMIN AREA
+  // ADMIN AREA
   {
     path: "/admin",
     element: (
@@ -55,50 +71,27 @@ const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <Navigate to="dashboard" replace /> },
-      {
-        path: "dashboard",
-        element: (
-          <ProtectedAdmin>
-            <Dashboard />
-          </ProtectedAdmin>
-        ),
-      },
-      {
-        path: "lawyermanagement",
-        element: (
-          <ProtectedAdmin>
-            <LawyerManagement />
-          </ProtectedAdmin>
-        ),
-      },
-      {
-        path: "lawbookmanagement",
-        element: (
-          <ProtectedAdmin>
-            <LawBookManagement />
-          </ProtectedAdmin>
-        ),
-      },
+      { path: "dashboard", element: <Dashboard /> },
+      { path: "lawyermanagement", element: <LawyerManagement /> },
+      { path: "lawbookmanagement", element: <LawBookManagement /> },
       {
         path: "lawyerschedulemanagement",
-        element: (
-          <ProtectedAdmin>
-            <LawyerScheduleManagement />
-          </ProtectedAdmin>
-        ),
+        element: <LawyerScheduleManagement />,
       },
+
+      // AdminManagement - only for superadmins
       {
         path: "adminmanagement",
         element: (
-          <ProtectedAdmin>
+          <ProtectedSuperAdmin>
             <AdminManagement />
-          </ProtectedAdmin>
+          </ProtectedSuperAdmin>
         ),
       },
     ],
   },
 
-  // Catch-all
+  // Catch-all route
   { path: "*", element: <Navigate to="/" replace /> },
 ]);
 
