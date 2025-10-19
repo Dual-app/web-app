@@ -37,7 +37,7 @@ export default function RegisterModal({ open, onClose }) {
   const [errs, setErrs] = useState({});
   const [success, setSuccess] = useState(false);
 
-  if (!open) return null; // prevent rendering when closed ✅
+  if (!open) return null; // prevent rendering when closed 
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -66,7 +66,7 @@ export default function RegisterModal({ open, onClose }) {
     if (Object.keys(next).length === 0) {
       setSuccess(true);
       setTimeout(() => {
-        onClose?.(); // ✅ close modal after success
+        onClose?.(); //  close modal after success
         window.location.href = "/"; // redirect to home (or login)
       }, 2500);
     }
