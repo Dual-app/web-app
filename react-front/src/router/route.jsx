@@ -14,11 +14,11 @@ import Lawyer from "../Customer/lawyer";
 import Topup from "../Customer/topuppg";
 
 // Simulate logged-in role
-const userRole = "superadmin"; // can be 'admin', 'superadmin', or 'customer'
+const userRole = "admin"; // can be 'admin', 'superadmin', or 'customer'
 
 // Route protection components
 function ProtectedAdmin({ children }) {
-  return userRole === "admin" || userRole === "superadmin" ? (
+  return userRole === "customer" || userRole === "superadmin" ? (
     children
   ) : (
     <Navigate to="/" replace />

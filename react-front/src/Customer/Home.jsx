@@ -48,7 +48,7 @@ export default function Home() {
         </div>
       </header>
 
-    {/* 🏛️ About LegalEase Section */}
+    {/*  About LegalEase Section */}
 <div className="py-16 bg-white">
   <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-8 px-6">
     {/* Left: Image */}
@@ -92,124 +92,120 @@ export default function Home() {
   </div>
 </div>
 
-
-      {/* 👩‍⚖️ Lawyer Section */}
-<div className="py-16 bg-gray-50">
-  <h2 className="text-3xl font-semibold text-center mb-10 text-[#83B582]">
-    Meet Our Experienced Lawyers
-  </h2>
-
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto px-6">
-    {/* Lawyer 1 */}
-    <div className="bg-white shadow-md rounded-lg overflow-hidden">
-      <img
-        src="https://images.unsplash.com/photo-1607746882042-944635dfe10e"
-        alt="Lawyer 1"
-        className="w-full h-60 object-cover"
-      />
-      <div className="p-5">
-        <h3 className="text-xl font-semibold mb-2 text-gray-800">Aung Min</h3>
-        <p className="text-gray-600 mb-4">
-          Specializing in criminal defense and family law with over 10 years of
-          experience helping clients achieve justice.
-        </p>
-        <a
-          href="/lawyer"
-          className="text-[#83B582] hover:text-[#55a754] font-semibold"
-        >
-          Read More 
-        </a>
-      </div>
-    </div>
-
-    {/* Lawyer 2 */}
-    <div className="bg-white shadow-md rounded-lg overflow-hidden">
-      <img
-        src="https://images.unsplash.com/photo-1551836022-d5d88e9218df"
-        alt="Lawyer 2"
-        className="w-full h-60 object-cover"
-      />
-      <div className="p-5">
-        <h3 className="text-xl font-semibold mb-2 text-gray-800">Zaw Htet</h3>
-        <p className="text-gray-600 mb-4">
-          Corporate law expert with deep experience in business contracts,
-          negotiations, and legal compliance.
-        </p>
-        <a
-          href="/lawyer"
-          className="text-[#83B582] hover:text-[#55a754] font-semibold"
-        >
-          Read More 
-        </a>
-      </div>
-    </div>
-
-    {/* Lawyer 3 */}
-    <div className="bg-white shadow-md rounded-lg overflow-hidden">
-      <img
-        src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1"
-        alt="Lawyer 3"
-        className="w-full h-60 object-cover"
-      />
-      <div className="p-5">
-        <h3 className="text-xl font-semibold mb-2 text-gray-800">Hnin Ei Mon</h3>
-        <p className="text-gray-600 mb-4">
-          Passionate about human rights and civil litigation, advocating
-          strongly for fairness and equal protection.
-        </p>
-        <a
-          href="/lawyer"
-          className="text-[#83B582] hover:text-[#55a754] font-semibold"
-        >
-          Read More 
-        </a>
-      </div>
+{/* PRACTICE AREAS */}
+<section className="py-16 bg-gray-50">
+  <div className="max-w-6xl mx-auto px-6 text-center">
+    <h2 className="text-3xl font-semibold text-[#83B582] mb-10">Our Practice Areas</h2>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {[
+        {
+          title: "Corporate Law",
+          desc: "Assisting businesses with contracts, mergers, and legal compliance.",
+          icon: "💼",
+        },
+        {
+          title: "Family Law",
+          desc: "Helping families resolve divorce, custody, and inheritance matters with care.",
+          icon: "👨‍👩‍👧‍👦",
+        },
+        {
+          title: "Criminal Law",
+          desc: "Providing expert defense and justice for those accused of criminal offenses.",
+          icon: "⚖️",
+        },
+      ].map((area) => (
+        <div key={area.title} className="bg-white rounded-lg shadow-md p-6">
+          <div className="text-4xl mb-3">{area.icon}</div>
+          <h3 className="text-xl font-semibold mb-2 text-gray-800">{area.title}</h3>
+          <p className="text-gray-600 text-sm">{area.desc}</p>
+        </div>
+      ))}
     </div>
   </div>
-</div>
+</section>
 
-
-      {/* SERVICES */}
-      <section className="py-12">
-        <div className="mx-auto max-w-7xl px-4">
-          <div className="grid gap-4 md:grid-cols-4">
-            {[
-              {
-                num: "01",
-                title: "Get Your Legal Advice",
-                body: "Understand your options and next steps with a quick consult.",
-              },
-              {
-                num: "02",
-                title: "Work with Expert Lawyers",
-                body: "Dedicated specialists in corporate, criminal, family, and more.",
-              },
-              {
-                num: "03",
-                title: "Clear, Fair Fees",
-                body: "Upfront pricing and tailored scopes—no surprises.",
-              },
-              {
-                num: "04",
-                title: "Secure Document Review",
-                body: "Share files safely and track your case in one place.",
-              },
-            ].map((card) => (
-              <div
-                key={card.num}
-                className="h-full rounded border p-4 shadow-sm"
-              >
-                <span className="text-sm text-gray-500">{card.num}</span>
-                <h3 className="mt-2 text-lg font-semibold">{card.title}</h3>
-                <p className="mt-1 text-sm text-gray-600">{card.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FOOTER */}
+{/* WHY CHOOSE US */}
+<section className="py-16 bg-white">
+  <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
+    <div>
+      <h2 className="text-3xl font-semibold text-[#83B582] mb-6">
+        Why Clients Choose LegalEase
+      </h2>
+      <ul className="space-y-4 text-gray-700">
+        <li>✅ Experienced lawyers with proven case success</li>
+        <li>🔒 Guaranteed privacy and data protection</li>
+        <li>💬 Clear communication throughout the process</li>
+        <li>⚖️ Fair and transparent consultation fees</li>
+      </ul>
     </div>
+    <img
+      src="https://img.freepik.com/premium-photo/closeup-view-courtroom-judge-justice-court-lawyer-s-desk-legal-office_43157-5084.jpg"
+      alt="Why Choose Us"
+      className="rounded-lg shadow-md"
+    />
+  </div>
+</section>
+
+
+{/* TESTIMONIALS */}
+<section className="py-16 bg-gray-50">
+  <div className="max-w-6xl mx-auto px-6 text-center">
+    <h2 className="text-3xl font-semibold text-[#83B582] mb-8">
+      What Clients Say
+    </h2>
+
+    <div className="flex gap-6 overflow-x-auto no-scrollbar px-2">
+      {[
+        {
+          name: "Thura Aung",
+          feedback:
+            "LegalEase helped me resolve a business dispute efficiently. The lawyers were transparent and kind.",
+        },
+        {
+          name: "Mya Nandar",
+          feedback:
+            "Excellent consultation and very professional communication from start to finish.",
+        },
+        {
+          name: "David Lin",
+          feedback:
+            "The process was fast and smooth — I recommend LegalEase to anyone needing trusted legal advice.",
+        },
+      ].map((client) => (
+        <div
+          key={client.name}
+          className="bg-white min-w-[250px] shadow-md rounded-lg p-5 text-left"
+        >
+          <p className="text-gray-700 text-sm italic mb-3">
+            “{client.feedback}”
+          </p>
+          <p className="text-sm font-semibold text-[#1A3636]">{client.name}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+
+      <footer class="bg-[#83B582] text-black py-6">
+      <div class="max-w-6xl mx-auto px-4 text-center">
+      <h3 class="text-lg font-semibold">LegalEase Law Firm</h3>
+      <p class="text-sm text-black/80 mt-1">
+        Yangon Main Office — 123 Pyay Road, Yangon, Myanmar
+      </p>
+      <p class="text-sm text-black/80">📞 +95 9 123 456 789</p>
+      <p class="text-sm text-black/80">✉️ contact@legalease.com</p>
+
+      <div class="border-t border-black/20 mt-4 pt-3">
+      <p className="text-xs text-black/70">
+              © {new Date().getFullYear()} LegalEase Law Firm. All rights reserved.
+      </p>
+      </div>
+    </div>
+</footer>
+
+    </div>
+    
   );
 }
 
