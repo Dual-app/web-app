@@ -12,6 +12,8 @@ import AboutUs from "../Customer/aboutus";
 import Lawbook from "../Customer/lawbook";
 import Lawyer from "../Customer/lawyer";
 import Topup from "../Customer/topuppg";
+import TermsAndConditions from "../Customer/terms&conditions";
+import Clientbooking from "../Customer/clientbooking";
 
 // Simulate logged-in role
 const userRole = "admin"; // can be 'admin', 'superadmin', or 'customer'
@@ -58,6 +60,8 @@ const router = createBrowserRouter([
       { path: "lawbook", element: <Lawbook /> },
       { path: "lawyer", element: <Lawyer /> },
       { path: "topuppg", element: <Topup /> },
+      {path: "termsandconditions", element: <TermsAndConditions />},
+      {path: "clientbooking", element: <Clientbooking />},
     ],
   },
 

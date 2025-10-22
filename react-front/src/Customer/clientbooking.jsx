@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLawyer } from '../hooks/LawyerHook';  
 
-const BookingPage = () => {
+const Clientbooking = () => {
   const [selectedCaseType, setSelectedCaseType] = useState('');
   const [filteredLawyers, setFilteredLawyers] = useState([]);
   const { lawyers, fetchLawyers } = useLawyer();
@@ -57,4 +57,4 @@ const BookingPage = () => {
   );
 };
 
-export default BookingPage;
+export default Clientbooking;

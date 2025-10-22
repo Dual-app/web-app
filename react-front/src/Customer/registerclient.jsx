@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 const EMAIL_RX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const STRONG_PW_RX =
@@ -305,9 +306,9 @@ export default function RegisterModal({ open, onClose }) {
                 />
                 <span>
                   I accept the{" "}
-                  <a href="#" className="text-[#1A3636] underline">
+                  <Link to="/customer/termsandconditions"className="text-[#1A3636] underline">
                     Terms and Conditions
-                  </a>
+                  </Link>
                 </span>
               </label>
               {errs.agree && (

@@ -1,19 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react"; 
+import { Link } from "react-router-dom";
+import { useLawyer } from "../hooks/LawyerHook";
 
 export default function LawyerPage() {
-  const [lawyers, setLawyers] = useState([]);
+  const { lawyers, fetchLawyers } = useLawyer();
   const [search, setSearch] = useState("");
 
-  // Fetch lawyer data from backend
   useEffect(() => {
-    fetch("http://localhost:5000/lawyers") // 🔁 update your API endpoint
-      .then((res) => res.json())
-      .then((data) => setLawyers(data))
-      .catch((err) => console.error("Error fetching lawyers:", err));
-  }, []);
+    fetchLawyers();
+  }, [fetchLawyers]);
 
   const filteredLawyers = lawyers.filter((lawyer) =>
-    lawyer.Lawyer_Name?.toLowerCase().includes(search.toLowerCase())
+    lawyer.Lawyer_Name.toLowerCase().includes(search.toLowerCase())
   );
 
   return (

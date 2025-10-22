@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import LoginModal from "../Customer/loginclient.jsx";
-import RegisterModal from "../Customer/registerclient.jsx";
+import LoginModal from "../Customer/loginclient";
+import RegisterModal from "../Customer/registerclient";
+import BookNowBanner from "./booknowbanner";
 import { Link } from "react-router-dom";
 
 function CustomerNav() {
@@ -103,6 +104,8 @@ function CustomerNav() {
           </div>
         </div>
       </nav>
+
+      <BookNowBanner />
 
       {/* MODALS */}
       <LoginModal open={openLogin} onClose={() => setOpenLogin(false)} />
