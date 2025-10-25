@@ -20,7 +20,7 @@ const userRole = "admin"; // can be 'admin', 'superadmin', or 'customer'
 
 // Route protection components
 function ProtectedAdmin({ children }) {
-  return userRole === "customer" || userRole === "superadmin" ? (
+  return userRole === "admin" || userRole === "superadmin" ? (
     children
   ) : (
     <Navigate to="/" replace />

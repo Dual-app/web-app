@@ -40,11 +40,10 @@ function AdminNav() {
           <i className="bi bi-file-earmark-text mr-2"></i> Schedule
         </Link>
         <Link
-          to="/admin/settings"
+          to="/admin/clientappointment"
           className="hover:bg-[#55a754] rounded flex items-center text-white pl-7 py-3 !no-underline"
         >
-          <i className="bi bi-gear mr-2"></i> Settings
-        </Link>
+          <i className="bi bi-gear mr-2"></i> ClientAppointment        </Link>
         <Link
           to="/home"
           className="hover:bg-[#55a754] rounded flex items-center text-white pl-7 py-3 !no-underline"
