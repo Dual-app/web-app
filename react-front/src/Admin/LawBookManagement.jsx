@@ -1,19 +1,24 @@
 import React, { useState } from "react";
+import { useLawbooks } from "../hooks/LawbookHook";
 
 function LawBookManagement() {
+  const { createLawbook, updateLawbook, deleteLawbook } = useLawbooks();
+
   const [formData, setFormData] = useState({
-    title: "",
-    author: "",
-    year: "",
-    category: "",
-    preview: "",
-    file: null,
+    Title: "",
+    Author: "",
+    Year: "",
+    Category: "",
+    ShortPreview: "",
+    FilePath: "example",
   });
 
   const [formError, setFormError] = useState({});
   const [books, setBooks] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [editingIndex, setEditingIndex] = useState(null);
+
+  console.log(formData);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -22,56 +27,59 @@ function LawBookManagement() {
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
-
-    // Clear specific error on change
-    setFormError((prev) => ({ ...prev, [name]: "" }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    // Basic validation
     let errors = {};
+    if (!formData.Title) errors.Title = "Title is required";
+    if (!formData.Author) errors.Author = "Author is required";
+    if (!formData.Year) errors.Year = "Year is required";
+    if (!formData.Category) errors.Category = "Category is required";
+    if (!formData.ShortPreview) errors.ShortPreview = "Preview is required";
+    if (!formData.FilePath) errors.FilePath = "File is required";
 
-    if (!formData.title.trim()) errors.title = "Book Title is required.";
-    if (!formData.author.trim()) errors.author = "Author is required.";
-    if (!formData.year || isNaN(formData.year))
-      errors.year = "Enter a valid year.";
-    if (!formData.category.trim()) errors.category = "Category is required.";
-    if (!formData.preview.trim() || formData.preview.trim().length < 10)
-      errors.preview = "Preview text must be at least 10 characters.";
-    if (!formData.file) errors.file = "Only PDF or DOCX files allowed.";
-
-    if (Object.keys(errors).length > 0) {
-      setFormError(errors);
-      return;
-    }
+    setFormError(errors);
+    if (Object.keys(errors).length > 0) return;
 
     if (editingIndex !== null) {
-      const updatedBooks = [...books];
-      updatedBooks[editingIndex] = formData;
-      setBooks(updatedBooks);
+      // Update existing book
+      updateLawbook(books[editingIndex].id, formData);
       setEditingIndex(null);
     } else {
-      setBooks((prev) => [...prev, formData]);
+      // Create new book
+      createLawbook(formData);
     }
+
+    console.log("Submitted:", formData);
 
     // Reset form
     setFormData({
-      title: "",
-      author: "",
-      year: "",
-      category: "",
-      preview: "",
-      file: null,
+      Title: "",
+      Author: "",
+      Year: "",
+      Category: "",
+      ShortPreview: "",
+      FilePath: "example",
     });
     setFormError({});
   };
 
   const handleDelete = (index) => {
-    setBooks((prev) => prev.filter((_, i) => i !== index));
+    deleteLawbook(books[index].id);
   };
 
   const handleEdit = (index) => {
-    setFormData(books[index]);
+    const book = books[index];
+    setFormData({
+      Title: book.title,
+      Author: book.author,
+      Year: book.year,
+      Category: book.category,
+      ShortPreview: book.preview,
+      FilePath: "example", // File cannot be pre-filled
+    });
     setEditingIndex(index);
   };
 
@@ -91,16 +99,18 @@ function LawBookManagement() {
           <div>
             <input
               type="text"
-              name="title"
-              value={formData.title}
+              name="Title"
+              value={formData.Title}
               onChange={handleChange}
               className={`w-full border rounded px-3 py-2 focus:border-black focus:shadow-none ${
-                formError.title ? "border-red-500" : "border-gray-300"
+                formError.Title ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="Book Title"
             />
-            {formError.title && (
-              <small className="text-sm text-[#d9534f]">{formError.title}</small>
+            {formError.Title && (
+              <small className="text-sm text-[#d9534f]">
+                {formError.Title}
+              </small>
             )}
           </div>
 
@@ -108,16 +118,18 @@ function LawBookManagement() {
           <div>
             <input
               type="text"
-              name="author"
-              value={formData.author}
+              name="Author"
+              value={formData.Author}
               onChange={handleChange}
               className={`w-full border rounded px-3 py-2 focus:border-black focus:shadow-none ${
-                formError.author ? "border-red-500" : "border-gray-300"
+                formError.Author ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="Author"
             />
-            {formError.author && (
-              <small className="text-sm text-[#d9534f]">{formError.author}</small>
+            {formError.Author && (
+              <small className="text-sm text-[#d9534f]">
+                {formError.Author}
+              </small>
             )}
           </div>
 
@@ -125,16 +137,16 @@ function LawBookManagement() {
           <div>
             <input
               type="number"
-              name="year"
-              value={formData.year}
+              name="Year"
+              value={formData.Year}
               onChange={handleChange}
               className={`w-full border rounded px-3 py-2 focus:border-black focus:shadow-none ${
-                formError.year ? "border-red-500" : "border-gray-300"
+                formError.Year ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="Year"
             />
-            {formError.year && (
-              <small className="text-sm text-[#d9534f]">{formError.year}</small>
+            {formError.Year && (
+              <small className="text-sm text-[#d9534f]">{formError.Year}</small>
             )}
           </div>
 
@@ -142,33 +154,37 @@ function LawBookManagement() {
           <div>
             <input
               type="text"
-              name="category"
-              value={formData.category}
+              name="Category"
+              value={formData.Category}
               onChange={handleChange}
               className={`w-full border rounded px-3 py-2 focus:border-black focus:shadow-none ${
-                formError.category ? "border-red-500" : "border-gray-300"
+                formError.Category ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="Category"
             />
-            {formError.category && (
-              <small className="text-sm text-[#d9534f]">{formError.category}</small>
+            {formError.Category && (
+              <small className="text-sm text-[#d9534f]">
+                {formError.Category}
+              </small>
             )}
           </div>
 
           {/* Preview Text */}
           <div className="md:col-span-2">
             <textarea
-              name="preview"
-              value={formData.preview}
+              name="ShortPreview"
+              value={formData.ShortPreview}
               onChange={handleChange}
               placeholder="Short preview or summary of the law book..."
               className={`w-full border rounded px-3 py-2 focus:border-black focus:shadow-none ${
-                formError.preview ? "border-red-500" : "border-gray-300"
+                formError.ShortPreview ? "border-red-500" : "border-gray-300"
               }`}
               rows="3"
             />
-            {formError.preview && (
-              <small className="text-sm text-[#d9534f]">{formError.preview}</small>
+            {formError.ShortPreview && (
+              <small className="text-sm text-[#d9534f]">
+                {formError.ShortPreview}
+              </small>
             )}
           </div>
 
@@ -176,15 +192,15 @@ function LawBookManagement() {
           <div className="md:col-span-2">
             <input
               type="file"
-              name="file"
+              name="FilePath"
               onChange={handleChange}
               className={`w-full border rounded focus:border-black focus:shadow-none ${
-                formError.file ? "border-red-500" : "border-gray-300"
+                formError.FilePath ? "border-red-500" : "border-gray-300"
               }`}
               accept=".pdf,.docx"
             />
-            {formError.file && (
-              <small className="text-sm text-[#d9534f]">{formError.file}</small>
+            {formError.FilePath && (
+              <small className="text-sm text-[#d9534f]">{formError.FilePath}</small>
             )}
           </div>
         </div>
@@ -227,17 +243,17 @@ function LawBookManagement() {
             {filteredBooks.length > 0 ? (
               filteredBooks.map((book, index) => (
                 <tr key={index}>
-                  <td className="px-4 py-2">{book.title}</td>
-                  <td className="px-4 py-2">{book.author}</td>
-                  <td className="px-4 py-2">{book.year}</td>
-                  <td className="px-4 py-2">{book.category}</td>
+                  <td className="px-4 py-2">{book.Title}</td>
+                  <td className="px-4 py-2">{book.Author}</td>
+                  <td className="px-4 py-2">{book.Year}</td>
+                  <td className="px-4 py-2">{book.Category}</td>
                   <td className="px-4 py-2 text-sm text-gray-600">
                     {book.preview.length > 40
                       ? book.preview.slice(0, 40) + "..."
                       : book.preview}
                   </td>
                   <td className="px-4 py-2">
-                    {book.file?.name?.split(".").pop().toUpperCase()}
+                    {book.FilePath?.name?.split(".").pop().toUpperCase()}
                   </td>
                   <td className="px-4 py-2 flex gap-2">
                     <button
