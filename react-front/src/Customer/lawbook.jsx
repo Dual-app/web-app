@@ -1,21 +1,27 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import {useLawbooks} from "../hooks/LawbookHook";
 
 export default function LawBookPage() {
-  const [books, setBooks] = useState([]);
+  
   const [search, setSearch] = useState("");
   const [openPreview, setOpenPreview] = useState(null);
+  const [books, setBooks] = useState([]);
 
+  const {lawbooks, loading, error} = useLawbooks();
 
-  // Fetch books from backend
   useEffect(() => {
-    fetch("http://localhost:5000/lawbooks")
-      .then((res) => res.json())
-      .then((data) => setBooks(data))
-      .catch((err) => console.error("Error fetching books:", err));
-  }, []);
+    setBooks(lawbooks);
+  }, [lawbooks]);
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-gray-500 text-lg">Loading law books...</p>
+      </div>
+    );
+  }
 
-  const filteredBooks = books.filter((b) =>
-    b.title?.toLowerCase().includes(search.toLowerCase())
+  const filteredBooks = books.filter((book) =>
+    book.title.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
