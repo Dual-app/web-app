@@ -49,6 +49,10 @@ function CustomerNav() {
             <Link to="/customer/lawyer" className="hover:text-gray-300 text-sm">
               Lawyers
             </Link>
+            
+            <Link to="/customer/clientbookinghistory" className="hover:text-gray-300 text-sm">
+              History
+            </Link>
 
             <button
               onClick={() => setOpenLogin(true)}

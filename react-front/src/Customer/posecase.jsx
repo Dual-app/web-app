@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-export default function PostCasePage() {
+export default function Postcase() {
   const [searchParams] = useSearchParams();
   const bookingId = searchParams.get("bookingId"); // Comes from Booking or History Page
   const clientId = localStorage.getItem("clientId") || "CL-0001";

@@ -10,7 +10,8 @@ export default function LawBookPage() {
   const {lawbooks, loading, error} = useLawbooks();
 
   useEffect(() => {
-    setBooks(lawbooks);
+    // Ensure we always set an array (guard against undefined/null)
+    setBooks(lawbooks ?? []);
   }, [lawbooks]);
   if (loading) {
     return (
@@ -20,9 +21,12 @@ export default function LawBookPage() {
     );
   }
 
-  const filteredBooks = books.filter((book) =>
-    book.title.toLowerCase().includes(search.toLowerCase())
-  );
+  // Protect against books not being an array and book.title being undefined
+  const filteredBooks = (Array.isArray(books) ? books : []).filter((book) => {
+    const title = book?.title ?? "";
+    const s = (search ?? "").toLowerCase();
+    return title.toLowerCase().includes(s);
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
@@ -56,7 +60,7 @@ export default function LawBookPage() {
           <div className="space-y-8">
             {filteredBooks.map((book, index) => (
               <div
-                key={index}
+                key={book?.id || book?._id || index}
                 className="bg-white rounded-lg shadow-md hover:shadow-lg transition p-6"
               >
                 {/* Title */}

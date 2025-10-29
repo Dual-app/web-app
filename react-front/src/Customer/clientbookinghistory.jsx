@@ -7,10 +7,10 @@ export default function ClientBookingHistory() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!clientId) {
-      navigate("/login");
-      return;
-    }
+    // if (!clientId) {
+    //   navigate("/login");
+    //   return;
+    // }
 
     // Fetch bookings for this client
     fetch(`http://localhost:5000/bookings/client/${clientId}`)

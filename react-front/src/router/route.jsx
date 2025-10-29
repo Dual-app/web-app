@@ -7,6 +7,7 @@ import LawBookManagement from "../Admin/LawBookManagement";
 import LawyerScheduleManagement from "../Admin/LawyerScheduleManagement";
 import AdminManagement from "../Admin/AdminManagement";
 import AdminError from "../Admin/AdminError";
+import ClientAppointmentManagement from "../Admin/ClientAppointmentManagement";
 import CustomerLayout from "../customerlayout";
 import AboutUs from "../Customer/aboutus";
 import Lawbook from "../Customer/lawbook";
@@ -14,6 +15,8 @@ import Lawyer from "../Customer/lawyer";
 import Topup from "../Customer/topuppg";
 import TermsAndConditions from "../Customer/terms&conditions";
 import Clientbooking from "../Customer/clientbooking";
+import PostCase from "../Customer/posecase";
+import ClientBookingHistory from "../Customer/clientbookinghistory";
 
 // Simulate logged-in role
 const userRole = "admin"; // can be 'admin', 'superadmin', or 'customer'
@@ -62,6 +65,8 @@ const router = createBrowserRouter([
       { path: "topuppg", element: <Topup /> },
       {path: "termsandconditions", element: <TermsAndConditions />},
       {path: "clientbooking", element: <Clientbooking />},
+      {path: "postcase", element: <PostCase />},
+      {path: "clientbookinghistory", element: <ClientBookingHistory />},
     ],
   },
 
@@ -82,6 +87,7 @@ const router = createBrowserRouter([
         path: "lawyerschedulemanagement",
         element: <LawyerScheduleManagement />,
       },
+      {path: "clientappointmentmanagement", element: <ClientAppointmentManagement />},
 
       // AdminManagement - only for superadmins
       {
