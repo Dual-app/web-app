@@ -225,19 +225,6 @@ export default function AboutUs() {
   </div>
 </section>
 
-
-      <section className="py-12 bg-gray-50">
-  <div className="max-w-5xl mx-auto text-center px-6">
-    <h2 className="text-2xl font-semibold mb-4 text-[#1A3636]">Our Commitment to Clients</h2>
-    <p className="text-gray-600">
-      At LegalEase, confidentiality isn’t just a policy—it’s our promise.  
-      Every consultation, document, and communication is handled with utmost privacy and legal compliance.  
-      We ensure that your information remains protected throughout every stage of your case.
-    </p>
-  </div>
-</section>
-
-
       {/* Closing Statement */}
       <section className="max-w-4xl mx-auto px-6 py-16 text-center">
         <h2 className="text-2xl font-semibold text-[#1A3636] mb-4">Our Promise</h2>

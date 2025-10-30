@@ -195,29 +195,15 @@ export default function Topup() {
               )}
             </div>
 
-            {/* Optional Document Upload */}
-            <div className="mb-5">
-              <label className="block text-sm font-medium text-gray-700">
-                Attach Document (optional)
-              </label>
-              <input
-                type="file"
-                name="document"
-                accept=".pdf,.doc,.docx"
-                onChange={handleChange}
-                className="mt-1 w-full rounded border border-gray-300 px-3 py-2"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                You may upload related case documents.
-              </p>
-            </div>
-
             {/* Information Note */}
             <div className="bg-gray-50 border border-gray-200 rounded-md p-3 mb-4 text-sm text-gray-600">
-              💡 <b>Note:</b> The $200 fee covers your consultation with a lawyer
-              for <b>one case</b>. You do not need to pay again for additional
-              consultations related to this case.
-            </div>
+  💡 <b>Note:</b> The $200 fee covers your consultation with a lawyer for 
+  <b> one case</b>. You do not need to pay again for additional consultations 
+  related to this case. <br /> <br />
+  🔁 If your assigned lawyer is unable to take your case, 
+  <b> $100 will be refunded</b> by cash.
+</div>
+
 
             {/* Submit Button */}
             <button

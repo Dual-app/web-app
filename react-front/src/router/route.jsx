@@ -19,7 +19,7 @@ import PostCase from "../Customer/posecase";
 import ClientBookingHistory from "../Customer/clientbookinghistory";
 
 // Simulate logged-in role
-const userRole = "admin"; // can be 'admin', 'superadmin', or 'customer'
+const userRole = "superadmin"; // can be 'admin', 'superadmin', or 'customer'
 
 // Route protection components
 function ProtectedAdmin({ children }) {

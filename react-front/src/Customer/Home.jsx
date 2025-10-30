@@ -187,6 +187,53 @@ export default function Home() {
 </section>
 
 
+
+      <section className="py-12 bg-gray-50">
+  <div className="max-w-5xl mx-auto text-center px-6">
+    <h2 className="text-2xl font-semibold mb-4 text-[#1A3636]">Our Commitment to Clients</h2>
+    <p className="text-gray-600">
+      At LegalEase, confidentiality isn’t just a policy—it’s our promise.  
+      Every consultation, document, and communication is handled with utmost privacy and legal compliance.  
+      We ensure that your information remains protected throughout every stage of your case.
+    </p>
+  </div>
+</section>
+
+      {/* MAP SECTION */}
+<section className="bg-white py-12 px-6 border-t border-gray-200">
+  <div className="max-w-6xl mx-auto text-center mb-8">
+    <h2 className="text-2xl md:text-3xl font-semibold text-[#83B582] mb-2">
+      Visit Our Main Office
+    </h2>
+    <p className="text-gray-600 text-sm md:text-base">
+      You can find us at <b>111, Pyay Road, Myaynigone, Sanchaung Township, Yangon</b>.  
+      We welcome clients for scheduled consultations at our office.
+    </p>
+  </div>
+
+  {/* GOOGLE MAP EMBED */}
+  <div className="max-w-6xl mx-auto rounded-lg overflow-hidden shadow-lg border border-gray-200">
+    <iframe
+      title="LegalEase Law Firm Location"
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3820.542531615767!2d96.1233732758054!3d16.812259283980312!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30c194cf7c7b7e77%3A0x48e2a7c47b3c89e7!2sPyay%20Rd%2C%20Yangon!5e0!3m2!1sen!2smm!4v1730345600000!5m2!1sen!2smm"
+      width="100%"
+      height="450"
+      allowFullScreen=""
+      loading="lazy"
+      referrerPolicy="no-referrer-when-downgrade"
+      className="w-full"
+    ></iframe>
+  </div>
+
+  {/* CONTACT INFO BELOW MAP */}
+  <div className="max-w-6xl mx-auto text-center mt-6 text-gray-700">
+    <p className="text-sm md:text-base">
+       <b>Address:</b> 123, Pyay Road, Myaynigone, Sanchaung Township, Yangon
+    </p>
+  </div>
+</section>
+
+
       <footer class="bg-[#83B582] text-black py-6">
       <div class="max-w-6xl mx-auto px-4 text-center">
       <h3 class="text-lg font-semibold">LegalEase Law Firm</h3>

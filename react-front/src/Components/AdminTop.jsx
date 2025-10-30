@@ -130,20 +130,9 @@ export default function AdminTop({ adminName = "Admin" }) {
         <div className="p-2 rounded-lg bg-[#83B582]/10 text-[#83B582]">
           <i className="bi bi-speedometer2"></i>
         </div>
-        <h3 className="text-lg font-semibold text-gray-800">Dashboard</h3>
+        <h3 className="text-lg font-semibold text-gray-800">LegalEase Law Firm</h3>
       </div>
 
-      {/* Middle: Search (optional for beauty) */}
-      <div className="hidden md:flex flex-1 max-w-xl mx-6">
-        <div className="relative w-full">
-          <i className="bi bi-search absolute left-3 top-2.5 text-gray-400"></i>
-          <input
-            type="text"
-            placeholder="Search…"
-            className="w-full border rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:border-black"
-          />
-        </div>
-      </div>
 
       {/* Right: Admin + Notifications */}
       <div className="flex items-center gap-3">
