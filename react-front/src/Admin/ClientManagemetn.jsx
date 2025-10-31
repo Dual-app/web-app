@@ -43,20 +43,20 @@ function ClientManagement() {
       !formData.Phone.trim() ||
       !formData.Password.trim()
     ) {
-      setFormError("⚠️ All fields are required!");
+      setFormError(" All fields are required!");
       return;
     }
 
     // Email pattern
     const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!EMAIL_RE.test(formData.Email)) {
-      setFormError("⚠️ Please enter a valid email address.");
+      setFormError(" Please enter a valid email address.");
       return;
     }
 
     // Password strength
-    if (formData.Password.length < 6) {
-      setFormError("⚠️ Password must be at least 6 characters long.");
+    if (formData.Password.length < 7) {
+      setFormError(" Password must be at least 7 characters long.");
       return;
     }
 
