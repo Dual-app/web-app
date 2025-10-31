@@ -197,7 +197,7 @@ export default function Topup() {
 
             {/* Information Note */}
             <div className="bg-gray-50 border border-gray-200 rounded-md p-3 mb-4 text-sm text-gray-600">
-  💡 <b>Note:</b> The $200 fee covers your consultation with a lawyer for 
+  💡 <b>Note:</b> The $100 fee covers your consultation with a lawyer for 
   <b> one case</b>. You do not need to pay again for additional consultations 
   related to this case. <br /> <br />
   🔁 If your assigned lawyer is unable to take your case, 
