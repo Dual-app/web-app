@@ -4,9 +4,7 @@ function AdminNav() {
   return (
     <div className="sticky top-0 left-0 h-screen w-full bg-[#83B582] text-white flex flex-col pt-8">
       <div className="flex flex-col items-start gap- mb-8 pl-7">
-        <h3 className="text-center mb-10 font-semibold text-xl">
-          Admin
-        </h3>
+        <h3 className="text-center mb-10 font-semibold text-xl">Admin</h3>
       </div>
       <div className="flex flex-col gap-2 px-2">
         <Link
@@ -15,7 +13,7 @@ function AdminNav() {
         >
           <i className="bi bi-speedometer2 mr-2"></i> Dashboard
         </Link>
-         <Link
+        <Link
           to="/admin/adminmanagement"
           className="hover:bg-[#55a754] rounded flex items-center text-white pl-7 py-3 !no-underline"
         >
@@ -43,14 +41,20 @@ function AdminNav() {
           to="/admin/clientappointmentmanagement"
           className="hover:bg-[#55a754] rounded flex items-center text-white pl-7 py-3 !no-underline"
         >
-          <i className="bi bi-gear mr-2"></i> ClientAppointment        </Link>
+          <i className="bi bi-gear mr-2"></i> ClientAppointment
+        </Link>
+        <Link
+          to="/admin/clientmanagement"
+          className="hover:bg-[#55a754] rounded flex items-center text-white pl-7 py-3 !no-underline"
+        >
+          <i className="bi bi-people-fill mr-2"></i> ClientManagement
+        </Link>
         <Link
           to="/home"
           className="hover:bg-[#55a754] rounded flex items-center text-white pl-7 py-3 !no-underline"
         >
           <i className="bi bi-box-arrow-right mr-2"></i> Logout
         </Link>
-        
       </div>
     </div>
   );
