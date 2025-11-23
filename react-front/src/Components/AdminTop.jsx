@@ -118,7 +118,8 @@ export default function AdminTop({ adminName = "Admin" }) {
         </h3>
       </div>
 
-      {/* RIGHT SIDE */}
+
+      {/* Right: Admin + Notifications */}
       <div className="flex items-center gap-3">
         {/* BELL ICON */}
         <div className="relative">

@@ -17,6 +17,7 @@ import TermsAndConditions from "../Customer/terms&conditions";
 import Clientbooking from "../Customer/clientbooking";
 import PostCase from "../Customer/posecase";
 import ClientBookingHistory from "../Customer/clientbookinghistory";
+import ClientManagement from "../Admin/ClientManagement";
 
 // Simulate logged-in role
 const userRole = "superadmin"; // can be 'admin', 'superadmin', or 'customer'
@@ -63,10 +64,10 @@ const router = createBrowserRouter([
       { path: "lawbook", element: <Lawbook /> },
       { path: "lawyer", element: <Lawyer /> },
       { path: "topuppg", element: <Topup /> },
-      {path: "termsandconditions", element: <TermsAndConditions />},
-      {path: "clientbooking", element: <Clientbooking />},
-      {path: "postcase", element: <PostCase />},
-      {path: "clientbookinghistory", element: <ClientBookingHistory />},
+      { path: "termsandconditions", element: <TermsAndConditions /> },
+      { path: "clientbooking", element: <Clientbooking /> },
+      { path: "postcase", element: <PostCase /> },
+      { path: "clientbookinghistory", element: <ClientBookingHistory /> },
     ],
   },
 
@@ -87,7 +88,11 @@ const router = createBrowserRouter([
         path: "lawyerschedulemanagement",
         element: <LawyerScheduleManagement />,
       },
-      {path: "clientappointmentmanagement", element: <ClientAppointmentManagement />},
+      {
+        path: "clientappointmentmanagement",
+        element: <ClientAppointmentManagement />,
+      },
+      {path: "clientmanagement", element: <ClientManagement />},
 
       // AdminManagement - only for superadmins
       {

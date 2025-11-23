@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useClient } from "../hooks/ClientHook";
+
 
 const EMAIL_RX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const STRONG_PW_RX =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
 
+
 function PhoneInput({ value, onChange, ...rest }) {
+
   function format(v) {
     let s = v.replace(/\D/g, "");
     if (s.length <= 3) return s;
@@ -37,12 +41,15 @@ export default function RegisterModal({ open, onClose }) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [errs, setErrs] = useState({});
   const [success, setSuccess] = useState(false);
+  const { clients, createClient}  = useClient();
+
 
   if (!open) return null; // prevent rendering when closed
 
   function handleSubmit(e) {
     e.preventDefault();
     const next = {};
+    
 
     if (fullName.trim().length < 4)
       next.fullName = "Full Name must be at least 4 characters long.";
@@ -65,11 +72,19 @@ export default function RegisterModal({ open, onClose }) {
     setErrs(next);
 
     if (Object.keys(next).length === 0) {
+      // No errors, proceed with registration
+      const newClient = {
+        Client_ID: clients.length + 1,
+        Client_Name: fullName.trim(),
+        Client_Email: email.trim(),
+        Client_Password: password,
+      };
+      createClient(newClient);
       setSuccess(true);
       setTimeout(() => {
-        onClose?.(); //  close modal after success
-        window.location.href = "/"; // redirect to home (or login)
-      }, 2500);
+        onClose?.();
+        setSuccess(false);
+      }, 2000); // Close after 2 seconds
     }
   }
 

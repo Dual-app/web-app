@@ -11,7 +11,7 @@ export default function App() {
       <div className="flex flex-col w-full p-7">
         <AdminTop />
         <div className="flex-1 p-8">
-          <Outlet /> {/* 👈 Admin routes render here */}
+          <Outlet /> {/*  Admin routes renderer */}
         </div>
       </div>
     </div>
