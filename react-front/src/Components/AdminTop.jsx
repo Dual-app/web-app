@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-
 const LS_KEY = "admin_notifications_v1";
 
+// Load notifications
 function loadNotifications() {
   try {
     return JSON.parse(localStorage.getItem(LS_KEY) || "[]");
@@ -13,9 +13,7 @@ function loadNotifications() {
 }
 
 function saveNotifications(list) {
-  try {
-    localStorage.setItem(LS_KEY, JSON.stringify(list));
-  } catch {}
+  localStorage.setItem(LS_KEY, JSON.stringify(list));
 }
 
 function timeAgo(ts) {
@@ -26,18 +24,18 @@ function timeAgo(ts) {
   if (min < 60) return `${min}m ago`;
   const hr = Math.floor(min / 60);
   if (hr < 24) return `${hr}h ago`;
-  const d = Math.floor(hr / 24);
-  return `${d}d ago`;
+  return `${Math.floor(hr / 24)}d ago`;
 }
 
-function iconFor(type) {
+// Outline icons (Option 2)
+function iconCircle(type) {
   switch (type) {
     case "schedule":
-      return "bi-calendar2-check";
+      return "border-blue-500 text-blue-500";
     case "client":
-      return "bi-person-lines-fill";
+      return "border-green-600 text-green-600";
     default:
-      return "bi-bell";
+      return "border-gray-500 text-gray-500";
   }
 }
 
@@ -45,52 +43,43 @@ export default function AdminTop({ adminName = "Admin" }) {
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState(() => loadNotifications());
   const navigate = useNavigate();
-  const containerRef = useRef(null);
+  const ref = useRef(null);
 
-  // Close dropdown on outside click
+  // Close dropdown when clicking outside
   useEffect(() => {
-    function handleClick(e) {
-      if (!containerRef.current) return;
-      if (!containerRef.current.contains(e.target)) setOpen(false);
+    function close(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
     }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
   }, []);
 
-  // Listen for new notifications from anywhere in the app
+  // Listen for new notifications from app
   useEffect(() => {
     function onNew(e) {
-      const detail = e.detail || {};
+      const d = e.detail;
       const entry = {
-        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()),
-        type: detail.type || "info",
-        title: detail.title || "New notification",
-        message: detail.message || "",
-        href: detail.href || null,
-        data: detail.data || null,
+        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+        type: d.type || "info",
+        title: d.title || "New notification",
+        message: d.message || "",
+        href: d.href || null,
         createdAt: Date.now(),
         read: false,
       };
-      setNotifications((prev) => {
-        const next = [entry, ...prev];
-        saveNotifications(next);
-        return next;
-      });
+
+      const updated = [entry, ...notifications];
+      setNotifications(updated);
+      saveNotifications(updated);
     }
     window.addEventListener("app:new-notification", onNew);
     return () => window.removeEventListener("app:new-notification", onNew);
-  }, []);
+  }, [notifications]);
 
-  const unreadCount = useMemo(
+  const unread = useMemo(
     () => notifications.filter((n) => !n.read).length,
     [notifications]
   );
-
-  const hasUnread = unreadCount > 0;
-
-  function toggleOpen() {
-    setOpen((v) => !v);
-  }
 
   function markAllRead() {
     const next = notifications.map((n) => ({ ...n, read: true }));
@@ -103,149 +92,159 @@ export default function AdminTop({ adminName = "Admin" }) {
     saveNotifications([]);
   }
 
-  function onClickItem(n) {
-    // Mark read
-    const next = notifications.map((x) => (x.id === n.id ? { ...x, read: true } : x));
+  function openItem(n) {
+    const next = notifications.map((x) =>
+      x.id === n.id ? { ...x, read: true } : x
+    );
     setNotifications(next);
     saveNotifications(next);
-    setOpen(false);
 
-    // Navigate if href provided
-    if (n.href) {
-      if (n.href.startsWith("http")) {
-        window.location.href = n.href;
-      } else {
-        navigate(n.href);
-      }
-    }
+    setOpen(false);
+    if (n.href) navigate(n.href);
   }
 
   return (
     <div
-      className="topbar flex justify-between items-center bg-white border-b px-4 py-3 shadow-sm"
-      ref={containerRef}
+      className="flex justify-between items-center bg-white border-b px-4 py-3 shadow-sm"
+      ref={ref}
     >
-      {/* Left: Title */}
+      {/* LEFT SIDE LOGO / TITLE */}
       <div className="flex items-center gap-3">
         <div className="p-2 rounded-lg bg-[#83B582]/10 text-[#83B582]">
           <i className="bi bi-speedometer2"></i>
         </div>
-        <h3 className="text-lg font-semibold text-gray-800">LegalEase Law Firm</h3>
+        <h3 className="text-lg font-semibold text-gray-800">
+          LegalEase Law Firm
+        </h3>
       </div>
 
-
-      {/* Right: Admin + Notifications */}
+      {/* RIGHT SIDE */}
       <div className="flex items-center gap-3">
-        {/* Bell */}
+        {/* BELL ICON */}
         <div className="relative">
           <button
-            type="button"
-            onClick={toggleOpen}
-            className="relative inline-flex items-center justify-center w-10 h-10 rounded-full bg-white border hover:bg-gray-50 transition"
-            aria-label="Notifications"
+            onClick={() => setOpen((v) => !v)}
+            className="w-10 h-10 rounded-full bg-white border flex items-center justify-center hover:bg-gray-50"
           >
             <i className="bi bi-bell text-gray-700 text-lg"></i>
 
-            {/* Red dot with pulse when there is unread */}
-            {hasUnread && (
+            {unread > 0 && (
               <>
-                <span className="absolute top-1.5 right-1.5 inline-flex h-2.5 w-2.5 rounded-full bg-red-600"></span>
-                <span className="absolute top-1.5 right-1.5 inline-flex h-2.5 w-2.5 rounded-full bg-red-600 opacity-75 animate-ping"></span>
+                <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-600 rounded-full"></span>
+                <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-600 rounded-full animate-ping opacity-75"></span>
               </>
             )}
           </button>
 
-          {/* Dropdown */}
-          <div
-            className={`absolute right-0 mt-2 w-80 bg-white border rounded-xl shadow-xl z-50 ${
-              open ? "block" : "hidden"
-            }`}
-          >
-            <div className="px-4 py-3 border-b flex items-center justify-between">
-              <div>
-                <p className="text-sm font-semibold text-gray-800">Notifications</p>
-                <p className="text-xs text-gray-500">
-                  {hasUnread ? `${unreadCount} unread` : "All caught up"}
-                </p>
-              </div>
-              <div className="flex gap-2">
-                {notifications.length > 0 && (
-                  <button
-                    onClick={markAllRead}
-                    className="text-xs px-2 py-1 rounded bg-gray-100 hover:bg-gray-200"
-                  >
-                    Mark all read
-                  </button>
-                )}
-                {notifications.length > 0 && (
-                  <button
-                    onClick={clearAll}
-                    className="text-xs px-2 py-1 rounded bg-gray-100 hover:bg-gray-200"
-                  >
-                    Clear
-                  </button>
-                )}
-              </div>
-            </div>
+          {/* DROPDOWN */}
+          {open && (
+            <div className="absolute right-0 mt-2 w-80 bg-white border rounded-xl shadow-xl z-50">
+              {/* HEADER */}
+              <div className="px-4 py-2.5 border-b flex items-center justify-between bg-gray-50">
+                <div>
+                  <p className="text-sm font-semibold text-gray-800">
+                    Notifications
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {unread > 0 ? `${unread} unread` : "All caught up"}
+                  </p>
+                </div>
 
-            <ul className="max-h-[60vh] overflow-auto py-1">
-              {notifications.length === 0 ? (
-                <li className="px-4 py-6 text-center text-sm text-gray-500">
-                  No notifications
-                </li>
-              ) : (
-                notifications.map((n) => (
-                  <li
-                    key={n.id}
-                    className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer transition ${
-                      !n.read ? "bg-[#83B582]/5" : ""
-                    }`}
-                    onClick={() => onClickItem(n)}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div
-                        className={`mt-0.5 text-[#83B582] w-8 h-8 rounded-full flex items-center justify-center ${
-                          n.type === "client"
-                            ? "bg-[#83B582]/10"
-                            : n.type === "schedule"
-                            ? "bg-blue-100 text-blue-600"
-                            : "bg-gray-100 text-gray-600"
-                        }`}
-                      >
-                        <i className={`bi ${iconFor(n.type)}`}></i>
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <p className="text-sm font-medium text-gray-800">{n.title}</p>
-                          <span className="text-[11px] text-gray-400 ml-2">
-                            {timeAgo(n.createdAt)}
-                          </span>
-                        </div>
-                        {n.message && (
-                          <p className="text-xs text-gray-600 mt-0.5">{n.message}</p>
-                        )}
-                        {n.href && (
-                          <span className="inline-flex items-center text-xs text-[#1A3636] mt-1">
-                            <i className="bi bi-box-arrow-up-right mr-1"></i> Click to view
-                          </span>
-                        )}
-                      </div>
-                      {!n.read && <span className="mt-1 h-2 w-2 rounded-full bg-red-500"></span>}
-                    </div>
+                <div className="flex gap-1.5">
+                  {notifications.length > 0 && (
+                    <button
+                      onClick={markAllRead}
+                      className="text-[10px] px-2 py-1 bg-gray-100 rounded hover:bg-gray-200"
+                    >
+                      Read
+                    </button>
+                  )}
+                  {notifications.length > 0 && (
+                    <button
+                      onClick={clearAll}
+                      className="text-[10px] px-2 py-1 bg-gray-100 rounded hover:bg-gray-200 text-red-500"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* LIST */}
+              <ul className="max-h-[60vh] overflow-auto">
+                {notifications.length === 0 ? (
+                  <li className="text-center text-sm text-gray-500 py-6">
+                    No notifications
                   </li>
-                ))
-              )}
-            </ul>
-          </div>
+                ) : (
+                  notifications.map((n) => (
+                    <li
+                      key={n.id}
+                      onClick={() => openItem(n)}
+                      className={`px-4 py-3 cursor-pointer hover:bg-gray-50 transition ${
+                        !n.read ? "bg-[#83B582]/5" : ""
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        {/* OUTLINE CIRCLE ICON (Option 2) */}
+                        <div
+                          className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm ${iconCircle(
+                            n.type
+                          )}`}
+                        >
+                          {n.type === "schedule" && (
+                            <i className="bi bi-calendar2-check"></i>
+                          )}
+                          {n.type === "client" && (
+                            <i className="bi bi-person-lines-fill"></i>
+                          )}
+                          {n.type !== "schedule" &&
+                            n.type !== "client" && <i className="bi bi-bell"></i>}
+                        </div>
+
+                        <div className="flex-1">
+                          <div className="flex justify-between items-center">
+                            <p className="text-sm font-medium text-gray-800">
+                              {n.title}
+                            </p>
+                            <span className="text-[11px] text-gray-400">
+                              {timeAgo(n.createdAt)}
+                            </span>
+                          </div>
+
+                          {n.message && (
+                            <p className="text-xs text-gray-600 mt-0.5">
+                              {n.message}
+                            </p>
+                          )}
+
+                          {n.href && (
+                            <p className="text-xs text-[#1A3636] mt-1 flex items-center">
+                              <i className="bi bi-box-arrow-up-right mr-1"></i>
+                              Click to open
+                            </p>
+                          )}
+                        </div>
+
+                        {!n.read && (
+                          <span className="mt-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                        )}
+                      </div>
+                    </li>
+                  ))
+                )}
+              </ul>
+            </div>
+          )}
         </div>
 
-        {/* Admin avatar/name */}
+        {/* ADMIN AVATAR */}
         <div className="flex items-center gap-2 pl-2">
           <div className="w-8 h-8 rounded-full bg-[#83B582] text-white flex items-center justify-center text-sm">
-            {adminName?.[0]?.toUpperCase() || "A"}
+            {adminName[0]?.toUpperCase() || "A"}
           </div>
           <div className="hidden sm:block">
-            <p className="text-sm font-medium text-gray-800">{adminName}</p>
+            <p className="text-sm font-semibold text-gray-800">{adminName}</p>
             <p className="text-xs text-gray-500">Administrator</p>
           </div>
         </div>
