@@ -7,4 +7,5 @@ router.get("/", LawyerController.getAllLawyers);
 router.put("/:id", LawyerController.updateLawyer);
 router.delete("/:id", LawyerController.deleteLawyer);
 
+
 module.exports = router;

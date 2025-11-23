@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { useLawbooks } from "../hooks/LawbookHook";
 
 function LawBookManagement() {
-  const { createLawbook, updateLawbook, deleteLawbook } = useLawbooks();
+  const { createLawbook, updateLawbook, deleteLawbook, lawbooks } =
+    useLawbooks();
 
   const [formData, setFormData] = useState({
     Title: "",
@@ -10,11 +11,10 @@ function LawBookManagement() {
     Year: "",
     Category: "",
     ShortPreview: "",
-    FilePath: "example",
+    file: null,
   });
 
   const [formError, setFormError] = useState({});
-  const [books, setBooks] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [editingIndex, setEditingIndex] = useState(null);
 
@@ -38,17 +38,15 @@ function LawBookManagement() {
     if (!formData.Year) errors.Year = "Year is required";
     if (!formData.Category) errors.Category = "Category is required";
     if (!formData.ShortPreview) errors.ShortPreview = "Preview is required";
-    if (!formData.FilePath) errors.FilePath = "File is required";
+    if (!formData.file) errors.File = "File is required";
 
     setFormError(errors);
     if (Object.keys(errors).length > 0) return;
 
     if (editingIndex !== null) {
-      // Update existing book
-      updateLawbook(books[editingIndex].id, formData);
+      updateLawbook(editingIndex, formData);
       setEditingIndex(null);
     } else {
-      // Create new book
       createLawbook(formData);
     }
 
@@ -61,30 +59,29 @@ function LawBookManagement() {
       Year: "",
       Category: "",
       ShortPreview: "",
-      FilePath: "example",
+      file: null,
     });
     setFormError({});
   };
 
-  const handleDelete = (index) => {
-    deleteLawbook(books[index].id);
+  const handleDelete = (id) => {
+    deleteLawbook(id);
   };
 
-  const handleEdit = (index) => {
-    const book = books[index];
+  const handleEdit = (book) => {
     setFormData({
-      Title: book.title,
-      Author: book.author,
-      Year: book.year,
-      Category: book.category,
-      ShortPreview: book.preview,
-      FilePath: "example", // File cannot be pre-filled
+      Title: book.Title,
+      Author: book.Author,
+      Year: book.Year,
+      Category: book.Category,
+      ShortPreview: book.ShortPreview,
+      file: null,
     });
-    setEditingIndex(index);
+    setEditingIndex(book.Lawbook_ID);
   };
 
-  const filteredBooks = books.filter((book) =>
-    book.title.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredBooks = lawbooks.filter((book) =>
+    book.Title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -93,7 +90,12 @@ function LawBookManagement() {
         Register Law Book
       </h2>
 
-      <form id="uploadForm" noValidate onSubmit={handleSubmit}>
+      <form
+        id="uploadForm"
+        noValidate
+        onSubmit={handleSubmit}
+        encType="multipart/form-data"
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Title */}
           <div>
@@ -152,16 +154,28 @@ function LawBookManagement() {
 
           {/* Category */}
           <div>
-            <input
-              type="text"
+            <select
               name="Category"
               value={formData.Category}
               onChange={handleChange}
-              className={`w-full border rounded px-3 py-2 focus:border-black focus:shadow-none ${
-                formError.Category ? "border-red-500" : "border-gray-300"
+              className={`form-control w-full border rounded px-3 py-2 focus:border-black focus:shadow-none ${
+                formError && !formData.Category.trim()
+                  ? "border-red-500"
+                  : "border-gray-300"
               }`}
-              placeholder="Category"
-            />
+            >
+              <option value="" disabled>
+                Select Category
+              </option>
+              <option value="Criminal">Criminal</option>
+              <option value="Business">Business</option>
+              <option value="Family">Family</option>
+              <option value="Corporate">Corporate</option>
+              <option value="Insurance">Insurance</option>
+              <option value="Property">Property</option>
+              <option value="Immigration">Immigration</option>
+            </select>
+
             {formError.Category && (
               <small className="text-sm text-[#d9534f]">
                 {formError.Category}
@@ -192,15 +206,13 @@ function LawBookManagement() {
           <div className="md:col-span-2">
             <input
               type="file"
-              name="FilePath"
+              name="file"
               onChange={handleChange}
-              className={`w-full border rounded focus:border-black focus:shadow-none ${
-                formError.FilePath ? "border-red-500" : "border-gray-300"
-              }`}
+              className="w-full border rounded"
               accept=".pdf,.docx"
             />
-            {formError.FilePath && (
-              <small className="text-sm text-[#d9534f]">{formError.FilePath}</small>
+            {formError.File && (
+              <small className="text-sm text-[#d9534f]">{formError.File}</small>
             )}
           </div>
         </div>
@@ -241,29 +253,24 @@ function LawBookManagement() {
           </thead>
           <tbody>
             {filteredBooks.length > 0 ? (
-              filteredBooks.map((book, index) => (
-                <tr key={index}>
-                  <td className="px-4 py-2">{book.Title}</td>
-                  <td className="px-4 py-2">{book.Author}</td>
-                  <td className="px-4 py-2">{book.Year}</td>
-                  <td className="px-4 py-2">{book.Category}</td>
-                  <td className="px-4 py-2 text-sm text-gray-600">
-                    {book.preview.length > 40
-                      ? book.preview.slice(0, 40) + "..."
-                      : book.preview}
-                  </td>
-                  <td className="px-4 py-2">
-                    {book.FilePath?.name?.split(".").pop().toUpperCase()}
-                  </td>
+              filteredBooks.map((book) => (
+                <tr key={book.Lawbook_ID}>
+                  <td>{book.Title}</td>
+                  <td>{book.Author}</td>
+                  <td>{book.Year}</td>
+                  <td>{book.Category}</td>
+                  <td>{book.ShortPreview.slice(0, 40)}...</td>
+                  <td>{book.FilePath}</td>
                   <td className="px-4 py-2 flex gap-2">
                     <button
-                      onClick={() => handleEdit(index)}
+                      onClick={() => handleEdit(book)}
                       className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
                     >
                       Edit
                     </button>
+
                     <button
-                      onClick={() => handleDelete(index)}
+                      onClick={() => handleDelete(book.Lawbook_ID)}
                       className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
                     >
                       Delete

@@ -126,20 +126,21 @@ function LawyerManagement() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this lawyer?")) {
-      await deleteLawyer(id);
-      fetchLawyers();
-      if (editingId === id) {
-        setEditingId(null);
+    if (window.confirm("Are you sure you want to delete this law book?")) {
+      await deleteLawbook(id);
+      fetchLawbooks();
+
+      // If you delete the book you are currently editing, reset form
+      if (editingIndex === id) {
+        setEditingIndex(null);
         setFormData({
-          Lawyer_ID: "",
-          Lawyer_Name: "",
-          Lawyer_Address: "",
-          Lawyer_Phone: "",
-          Lawyer_Type: "",
-          Lawyer_Photo: "",
+          Title: "",
+          Author: "",
+          Year: "",
+          Category: "",
+          ShortPreview: "",
+          file: null,
         });
-        setPhotoPreview("");
       }
     }
   };

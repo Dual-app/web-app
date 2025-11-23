@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../content/AuthContext";
 
 const LS_KEY = "admin_notifications_v1";
 
@@ -43,7 +44,8 @@ export default function AdminTop({ adminName = "Admin" }) {
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState(() => loadNotifications());
   const navigate = useNavigate();
-  const ref = useRef(null);
+  const containerRef = useRef(null);
+  const { auth } = useAuth();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -117,7 +119,6 @@ export default function AdminTop({ adminName = "Admin" }) {
           LegalEase Law Firm
         </h3>
       </div>
-
 
       {/* Right: Admin + Notifications */}
       <div className="flex items-center gap-3">
@@ -242,11 +243,11 @@ export default function AdminTop({ adminName = "Admin" }) {
         {/* ADMIN AVATAR */}
         <div className="flex items-center gap-2 pl-2">
           <div className="w-8 h-8 rounded-full bg-[#83B582] text-white flex items-center justify-center text-sm">
-            {adminName[0]?.toUpperCase() || "A"}
+            {auth.user.name?.[0]?.toUpperCase() || "A"}
           </div>
           <div className="hidden sm:block">
-            <p className="text-sm font-semibold text-gray-800">{adminName}</p>
-            <p className="text-xs text-gray-500">Administrator</p>
+            <p className="text-sm font-medium text-gray-800">{auth.user.name}</p>
+            <p className="text-xs text-gray-500">{auth.user.role}</p>
           </div>
         </div>
       </div>

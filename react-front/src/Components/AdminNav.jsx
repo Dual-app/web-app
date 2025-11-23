@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "../content/AuthContext";
 
 function AdminNav() {
+
+  const { logout } = useAuth();
+
   return (
     <div className="sticky top-0 left-0 h-screen w-full bg-[#83B582] text-white flex flex-col pt-8">
       <div className="flex flex-col items-start gap- mb-8 pl-7">
@@ -41,13 +45,20 @@ function AdminNav() {
           to="/admin/ClientBookingManagement"
           className="hover:bg-[#55a754] rounded flex items-center text-white pl-7 py-3 !no-underline"
         >
-          <i className="bi bi-gear mr-2"></i> ClientBooking       </Link>
+          <i className="bi bi-gear mr-2"></i> ClientAppointment
+        </Link>
         <Link
-          to="/home"
+          to="/admin/clientmanagement"
+          className="hover:bg-[#55a754] rounded flex items-center text-white pl-7 py-3 !no-underline"
+        >
+          <i className="bi bi-people-fill mr-2"></i> ClientManagement
+        </Link>
+        <button
+          onClick={logout}
           className="hover:bg-[#55a754] rounded flex items-center text-white pl-7 py-3 !no-underline"
         >
           <i className="bi bi-box-arrow-right mr-2"></i> Logout
-        </Link>
+        </button>
       </div>
     </div>
   );

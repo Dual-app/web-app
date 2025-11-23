@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useAuth } from "../content/AuthContext";
 
 const EMAIL_RX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
@@ -28,7 +29,9 @@ export default function LoginModal({ open, onClose }) {
     };
   }, [open, onClose]);
 
-  const handleSubmit = (e) => {
+  const { login } = useAuth(); // ← import from AuthContext
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const next = {};
 
@@ -38,19 +41,41 @@ export default function LoginModal({ open, onClose }) {
 
     // Validate password
     if (!password.trim()) next.password = "Password is required.";
-    else if (password.trim() !== "CorrectPass123!") {
-      // replace with real backend auth check later
-      next.password = "Incorrect password. Please try again.";
-    }
 
     setErrors(next);
+    if (Object.keys(next).length > 0) return;
 
-    if (Object.keys(next).length === 0) {
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        setErrors({ password: "Invalid email or password." });
+        return;
+      }
+
+      // SAVE LOGIN SESSION (Context + localStorage)
+      login(data);
+
       setSuccess(true);
+
       setTimeout(() => {
         onClose?.();
-        window.location.href = "/adminds.html"; // replace with route to dashboard page
-      }, 2000);
+
+        // ROLE-BASED REDIRECT
+        if (data.user.role === "admin" || data.user.role === "superadmin") {
+          window.location.href = "/admin";
+        } else {
+          window.location.href = "/customer/home";
+        }
+      }, 1200);
+    } catch (err) {
+      setErrors({ password: "Server error. Try again later." });
     }
   };
 

@@ -18,30 +18,44 @@ import Clientbooking from "../Customer/clientbooking";
 import PostCase from "../Customer/posecase";
 import ClientBookingHistory from "../Customer/clientbookinghistory";
 import ClientManagement from "../Admin/ClientManagement";
+import { useAuth } from "../content/AuthContext";
 
-// Simulate logged-in role
-const userRole = "superadmin"; // can be 'admin', 'superadmin', or 'customer'
 
 // Route protection components
 function ProtectedAdmin({ children }) {
-  return userRole === "admin" || userRole === "superadmin" ? (
-    children
-  ) : (
-    <Navigate to="/" replace />
-  );
+  const { auth } = useAuth();
+
+  if (!auth) return <Navigate to="/" replace />;
+
+  return auth.user.role === "admin" || auth.user.role === "superadmin"
+    ? children
+    : <Navigate to="/" replace />;
 }
+
 
 function ProtectedCustomer({ children }) {
-  return ["admin", "customer", "superadmin"].includes(userRole) ? (
-    children
-  ) : (
-    <Navigate to="/" replace />
-  );
+  const { auth } = useAuth();
+
+  if (!auth) return <Navigate to="/" replace />;
+
+  return auth.user.role === "customer" ||
+    auth.user.role === "admin" ||
+    auth.user.role === "superadmin"
+    ? children
+    : <Navigate to="/" replace />;
 }
 
+
 function ProtectedSuperAdmin({ children }) {
-  return userRole === "superadmin" ? children : <AdminError />;
+  const { auth } = useAuth();
+
+  if (!auth) return <Navigate to="/" replace />;
+
+  return auth.user.role === "superadmin"
+    ? children
+    : <AdminError />;
 }
+
 
 const router = createBrowserRouter([
   // HOME

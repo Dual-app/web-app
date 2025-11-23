@@ -95,17 +95,6 @@ function ClientManagement() {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this client?")) {
       await deleteClient(id);
-      fetchClients();
-      if (editingId === id) {
-        setEditingId(null);
-        setFormData({
-          Client_ID: "",
-          Full_Name: "",
-          Email: "",
-          Phone: "",
-          Password: "",
-        });
-      }
     }
   };
 
@@ -246,51 +235,53 @@ function ClientManagement() {
 
         {/* TABLE */}
         <div className="overflow-x-auto">
-          <table className="min-w-full border rounded-lg overflow-hidden bg-white shadow">
-            <thead className="bg-[#83B582] text-white w-full">
-              <tr>
-                <th className="px-4 py-2 w-1/12">ID</th>
-                <th className="px-4 py-2 w-2/12">Full Name</th>
-                <th className="px-4 py-2 w-3/12">Email</th>
-                <th className="px-4 py-2 w-2/12">Phone</th>
-                <th className="px-4 py-2 w-2/12">Password</th>
-                <th className="px-4 py-2 w-2/12">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredClients.length === 0 ? (
-                <tr>
-                  <td colSpan="6" className="text-center text-gray-500 py-4">
-                    No clients found.
-                  </td>
-                </tr>
-              ) : (
-                filteredClients.map((client) => (
-                  <tr key={client.Client_ID} className="border-t">
-                    <td className="px-4 py-2">{client.Client_ID}</td>
-                    <td className="px-4 py-2">{client.Full_Name}</td>
-                    <td className="px-4 py-2">{client.Email}</td>
-                    <td className="px-4 py-2">{client.Phone}</td>
-                    <td className="px-4 py-2">{client.Password}</td>
-                    <td className="px-4 py-2 flex gap-2">
-                      <button
-                        className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
-                        onClick={() => handleEdit(client)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
-                        onClick={() => handleDelete(client.Client_ID)}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+            <table className="min-w-full border rounded-lg overflow-hidden">
+                <thead className="bg-[#83B582] text-white">
+                    <tr>
+                        <th className="py-2 px-4 border-b">ID</th>
+                        <th className="py-2 px-4 border-b">Client Name </th>
+                        <th className="py-2 px-4 border-b">Client Email</th>
+                        <th className="py-2 px-4 border-b">Phone Number</th>
+                        <th className="py-2 px-4 border-b">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {filteredClients.length === 0 ? (
+                        <tr>
+                            <td colSpan="3" className="text-center py-4">
+                                No clients found.
+                            </td>
+                        </tr>
+                    ) : (
+                        filteredClients.map((client) => (
+                            <tr key={client.id}>
+                                <td className="py-2 px-4 border-b">{client.Client_ID}</td>
+                                <td className="py-2 px-4 border-b">{client.Client_Name}</td>
+                                <td className="py-2 px-4 border-b">{client.Client_Email}</td>                  
+                                <td className="py-2 px-4 border-b">
+                                    {client.Client_Password || "Unregistered"}
+                                </td>        
+                                <td className="py-2 px-4 border-b">
+                                    <div className="flex gap-2 items-center flex-nowrap">
+                                    <button
+                                        className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm whitespace-nowrap"
+                                        disabled
+                                    >
+                                        Reset 
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(client.Client_ID)}
+                                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                                    >
+                                        Delete
+                                    </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))
+                    )}
+                </tbody>
+            </table>
         </div>
       </div>
     </>

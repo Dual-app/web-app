@@ -1,31 +1,48 @@
 import React, { useState, useEffect } from "react";
 import { useLawyer } from "../hooks/LawyerHook";
+import { useBookings } from "../hooks/BookingHook";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../content/AuthContext";
 
 export default function ClientBooking() {
+  const { auth } = useAuth();
+  const navigate = useNavigate();
+
+  // STEP 1 STATES
   const [selectedCaseType, setSelectedCaseType] = useState("");
   const [selectedLawyer, setSelectedLawyer] = useState(null);
   const [filteredLawyers, setFilteredLawyers] = useState([]);
   const [clientName, setClientName] = useState("");
+  const [customerID, setCustomerID] = useState("");
   const [notes, setNotes] = useState("");
   const [showCaseForm, setShowCaseForm] = useState(false);
   const [bookingId, setBookingId] = useState(null);
 
+  // STEP 2 STATES
   const [caseData, setCaseData] = useState({
     caseTitle: "",
     caseDescription: "",
     document: null,
   });
-  const [errors, setErrors] = useState({});
-  const navigate = useNavigate();
-  const { lawyers, fetchLawyers } = useLawyer();
 
-  // Fetch lawyers
+  const [errors, setErrors] = useState({});
+
+  // HOOKS
+  const { lawyers, fetchLawyers } = useLawyer();
+  const { createBooking } = useBookings();
+
+  // AUTO-FILL CUSTOMER DATA
+  useEffect(() => {
+    if (auth?.user?.id) setCustomerID(auth.user.id.toString());
+    if (auth?.user?.name) setClientName(auth.user.name);
+  }, [auth]);
+
+  // FETCH LAWYERS
   useEffect(() => {
     fetchLawyers();
   }, []);
 
-  // Filter lawyers by case type
+  // FILTER LAWYERS
   useEffect(() => {
     if (selectedCaseType) {
       setFilteredLawyers(
@@ -37,11 +54,11 @@ export default function ClientBooking() {
     setSelectedLawyer(null);
   }, [selectedCaseType, lawyers]);
 
-  // Handle booking confirmation
+  // STEP 1 → STEP 2
   const handleBooking = () => {
-    const newBookingId = `BKG-${Date.now()}`;
     const nextErrors = {};
 
+    if (!customerID.trim()) nextErrors.customerID = "Customer ID is required.";
     if (!clientName.trim()) nextErrors.clientName = "Full name is required.";
     if (!selectedCaseType) nextErrors.caseType = "Please select a case type.";
     if (!selectedLawyer) nextErrors.lawyer = "Please select a lawyer.";
@@ -49,15 +66,16 @@ export default function ClientBooking() {
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
 
+    const newBookingId = `BKG-${Date.now()}`;
     setBookingId(newBookingId);
     setShowCaseForm(true);
   };
 
-  // Handle Post-Case submission
-  const handleCaseSubmit = (e) => {
+  // FINAL BOOKING SUBMISSION
+  const handleCaseSubmit = async (e) => {
     e.preventDefault();
-    const nextErrors = {};
 
+    const nextErrors = {};
     if (!caseData.caseTitle.trim())
       nextErrors.caseTitle = "Case title is required.";
     if (!caseData.caseDescription.trim())
@@ -66,17 +84,21 @@ export default function ClientBooking() {
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
 
-    console.log("Booking & Case Submitted:", {
-      bookingId,
-      clientName,
-      selectedCaseType,
-      selectedLawyer,
-      notes,
-      caseData,
-    });
+    const payload = {
+      CustomerID: customerID,
+      LawyerID: selectedLawyer.Lawyer_ID,
+      Case_Title: caseData.caseTitle,
+      Case_Description: caseData.caseDescription,
+      Additional_Notes: notes,
+      Document: caseData.document,
+    };
 
-    alert(`✅ Booking ${bookingId} submitted successfully!`);
-    navigate(`/top-up?bookingId=${bookingId}`);
+    try {
+      await createBooking(payload);
+      alert(`Booking ${bookingId} submitted successfully!`);
+    } catch (error) {
+      alert("Error submitting booking");
+    }
   };
 
   const handleCaseChange = (e) => {
@@ -84,7 +106,9 @@ export default function ClientBooking() {
     setCaseData((prev) => ({ ...prev, [name]: files ? files[0] : value }));
   };
 
-  // ========== UI ==========
+  // ================================
+  // UI STARTS HERE (UNCHANGED)
+  // ================================
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 py-12 px-6">
       <div className="max-w-5xl mx-auto">
@@ -98,7 +122,9 @@ export default function ClientBooking() {
           </p>
         </div>
 
-        {/* STEP 1: BOOKING */}
+        {/* ================================
+            STEP 1
+        ================================ */}
         {!showCaseForm && (
           <div className="bg-white rounded-lg shadow-md p-6 mb-10">
             <h2 className="text-xl font-semibold text-[#1A3636] mb-4">
@@ -106,7 +132,11 @@ export default function ClientBooking() {
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Client Name */}
+
+              {/* CUSTOMER ID */}
+              <input type="hidden" value={customerID} />
+
+              {/* Full Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Full Name
@@ -114,19 +144,9 @@ export default function ClientBooking() {
                 <input
                   type="text"
                   value={clientName}
-                  onChange={(e) => setClientName(e.target.value)}
-                  placeholder="Enter your full name"
-                  className={`mt-1 w-full border rounded-lg px-4 py-2 focus:outline-none ${
-                    errors.clientName
-                      ? "border-red-500"
-                      : "focus:border-[#83B582] border-gray-300"
-                  }`}
+                  readOnly
+                  className={`mt-1 w-full border rounded-lg px-4 py-2 border-gray-300`}
                 />
-                {errors.clientName && (
-                  <p className="text-sm text-red-500 mt-1">
-                    {errors.clientName}
-                  </p>
-                )}
               </div>
 
               {/* Case Type */}
@@ -137,10 +157,8 @@ export default function ClientBooking() {
                 <select
                   value={selectedCaseType}
                   onChange={(e) => setSelectedCaseType(e.target.value)}
-                  className={`mt-1 w-full border rounded-lg px-4 py-2 focus:outline-none ${
-                    errors.caseType
-                      ? "border-red-500"
-                      : "focus:border-[#83B582] border-gray-300"
+                  className={`mt-1 w-full border rounded-lg px-4 py-2 ${
+                    errors.caseType ? "border-red-500" : "border-gray-300"
                   }`}
                 >
                   <option value="">Select Case Type</option>
@@ -152,9 +170,6 @@ export default function ClientBooking() {
                   <option value="Property">Property</option>
                   <option value="Immigration">Immigration</option>
                 </select>
-                {errors.caseType && (
-                  <p className="text-sm text-red-500 mt-1">{errors.caseType}</p>
-                )}
               </div>
 
               {/* Notes */}
@@ -165,21 +180,20 @@ export default function ClientBooking() {
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Provide any details for your booking..."
-                  className="mt-1 w-full border rounded-lg px-4 py-2 focus:outline-none focus:border-[#83B582] h-24"
+                  placeholder="Provide any details..."
+                  className="mt-1 w-full border rounded-lg px-4 py-2 h-24"
                 />
               </div>
             </div>
 
-            {/* Lawyers List */}
+            {/* Lawyer List */}
             <div className="mt-8">
               <h3 className="text-lg font-semibold text-[#1A3636] mb-4">
                 Select a Lawyer
               </h3>
+
               {filteredLawyers.length === 0 ? (
-                <p className="text-gray-600">
-                  No lawyers found for the selected case type.
-                </p>
+                <p className="text-gray-600">No lawyers found.</p>
               ) : (
                 <div className="space-y-3">
                   {filteredLawyers.map((lawyer) => (
@@ -208,21 +222,14 @@ export default function ClientBooking() {
                           <p className="text-sm text-gray-600">
                             {lawyer.Lawyer_Type} Lawyer
                           </p>
-                          <p className="text-xs text-gray-500">
-                            {lawyer.Lawyer_Address}
-                          </p>
                         </div>
                       </div>
-                      <button className="px-3 py-1 bg-[#83B582] text-black rounded hover:bg-[#55a754]">
-                        Select
-                      </button>
                     </div>
                   ))}
                 </div>
               )}
             </div>
 
-            {/* Confirm Button */}
             <button
               onClick={handleBooking}
               className="mt-6 w-full bg-[#83B582] text-black font-semibold py-2 rounded-lg hover:bg-[#55a754]"
@@ -232,15 +239,14 @@ export default function ClientBooking() {
           </div>
         )}
 
-        {/* STEP 2: POST CASE */}
+        {/* ================================
+            STEP 2
+        ================================ */}
         {showCaseForm && (
           <div className="bg-white rounded-lg shadow-md p-6 mb-10">
             <h2 className="text-xl font-semibold text-[#1A3636] mb-2">
               Case Details for Booking {bookingId}
             </h2>
-            <p className="text-gray-600 mb-4">
-              Provide your case details for the selected lawyer.
-            </p>
 
             <form onSubmit={handleCaseSubmit}>
               {/* Case Title */}
@@ -253,16 +259,10 @@ export default function ClientBooking() {
                   name="caseTitle"
                   value={caseData.caseTitle}
                   onChange={handleCaseChange}
-                  placeholder="Enter a short case title"
-                  className={`mt-1 w-full rounded border px-3 py-2 focus:outline-none ${
-                    errors.caseTitle
-                      ? "border-red-500"
-                      : "focus:border-[#83B582] border-gray-300"
+                  className={`mt-1 w-full rounded border px-3 py-2 ${
+                    errors.caseTitle ? "border-red-500" : "border-gray-300"
                   }`}
                 />
-                {errors.caseTitle && (
-                  <p className="text-sm text-red-500 mt-1">{errors.caseTitle}</p>
-                )}
               </div>
 
               {/* Case Description */}
@@ -274,21 +274,15 @@ export default function ClientBooking() {
                   name="caseDescription"
                   value={caseData.caseDescription}
                   onChange={handleCaseChange}
-                  placeholder="Describe your case clearly..."
-                  className={`mt-1 w-full rounded border px-3 py-2 focus:outline-none h-28 ${
+                  className={`mt-1 w-full rounded border px-3 py-2 h-28 ${
                     errors.caseDescription
                       ? "border-red-500"
-                      : "focus:border-[#83B582] border-gray-300"
+                      : "border-gray-300"
                   }`}
                 />
-                {errors.caseDescription && (
-                  <p className="text-sm text-red-500 mt-1">
-                    {errors.caseDescription}
-                  </p>
-                )}
               </div>
 
-              {/* Document Upload */}
+              {/* Document */}
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700">
                   Attach Document (optional)
@@ -300,9 +294,6 @@ export default function ClientBooking() {
                   accept=".pdf,.doc,.docx"
                   className="mt-1 w-full rounded border border-gray-300 px-3 py-2"
                 />
-                <p className="text-xs text-gray-500 mt-1">
-                  You can attach contracts or evidence here.
-                </p>
               </div>
 
               <button
