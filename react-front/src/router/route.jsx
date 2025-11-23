@@ -7,7 +7,7 @@ import LawBookManagement from "../Admin/LawBookManagement";
 import LawyerScheduleManagement from "../Admin/LawyerScheduleManagement";
 import AdminManagement from "../Admin/AdminManagement";
 import AdminError from "../Admin/AdminError";
-import ClientAppointmentManagement from "../Admin/ClientBookingtManagement";
+import ClientBookingManagement from "../Admin/ClientBookingtManagement";
 import CustomerLayout from "../customerlayout";
 import AboutUs from "../Customer/aboutus";
 import Lawbook from "../Customer/lawbook";
@@ -89,8 +89,8 @@ const router = createBrowserRouter([
         element: <LawyerScheduleManagement />,
       },
       {
-        path: "clientappointmentmanagement",
-        element: <ClientAppointmentManagement />,
+        path: "clientbookingmanagement",
+        element: <ClientBookingManagement />,
       },
       {path: "clientmanagement", element: <ClientManagement />},
 
