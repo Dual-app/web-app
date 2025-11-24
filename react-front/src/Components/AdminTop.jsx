@@ -50,7 +50,7 @@ export default function AdminTop({ adminName = "Admin" }) {
   // Close dropdown when clicking outside
   useEffect(() => {
     function close(e) {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+      if (containerRef.current && !containerRef.current.contains(e.target)) setOpen(false);
     }
     document.addEventListener("mousedown", close);
     return () => document.removeEventListener("mousedown", close);
@@ -108,7 +108,7 @@ export default function AdminTop({ adminName = "Admin" }) {
   return (
     <div
       className="flex justify-between items-center bg-white border-b px-4 py-3 shadow-sm"
-      ref={ref}
+      ref={containerRef}
     >
       {/* LEFT SIDE LOGO / TITLE */}
       <div className="flex items-center gap-3">
