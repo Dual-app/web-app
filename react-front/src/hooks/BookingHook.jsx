@@ -34,6 +34,15 @@ export const useBookings = () => {
     }
   };
 
+  const assignSchedule = async (bookingID, scheduleID) => {
+    try {
+      await BookingAPI.assignSchedule(bookingID, scheduleID);
+      fetchBookings();
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   useEffect(() => {
     fetchBookings();
   }, []);
@@ -45,6 +54,7 @@ export const useBookings = () => {
     createBooking,
     deleteBooking,
     fetchBookings,
+    assignSchedule,
   };
 };
 

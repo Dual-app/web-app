@@ -55,4 +55,16 @@ export const BookingAPI = {
     });
     return res.json();
   },
+
+  assignSchedule: async (bookingID, scheduleID) => {
+    const res = await fetch(`${BASE_URL}/schedule/${bookingID}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ScheduleID: scheduleID }),
+    });
+
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.message);
+    return result;
+  },
 };

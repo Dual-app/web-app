@@ -15,6 +15,7 @@ const ClientRoutes = require("./routes/ClientRoute");
 const BookingRoutes = require("./routes/BookingRoute");
 const PaymentRoutes = require("./routes/PaymentRoutes");
 const AuthRoutes = require("./routes/AuthRoutes");
+const DashboardRoutes = require("./routes/DashboardRoutes");
 
 mongoose
   .connect(mongourl)
@@ -39,3 +40,4 @@ app.use("/api/clients", ClientRoutes);
 app.use("/api/bookings", BookingRoutes);
 app.use("/api/payments", PaymentRoutes);
 app.use("/api/auth", AuthRoutes);
+app.use("/api", DashboardRoutes);

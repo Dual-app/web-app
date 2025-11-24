@@ -76,3 +76,15 @@ exports.deleteLawyer = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.getscheduleByLawyer = async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const schedules = await Lawyer.find
+      .where("Lawyer_ID").equals(id)
+      .populate("schedules");
+    res.status(200).json(schedules);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

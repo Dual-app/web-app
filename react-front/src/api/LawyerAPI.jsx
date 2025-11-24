@@ -37,4 +37,9 @@ export const LawyerAPI = {
     const res = await fetch(`${BASE_URL}/${id}`, { method: "DELETE" });
     return res.json();
   },
+
+  getscheduleByLawyer: async (id) => {
+    const res = await fetch(`${BASE_URL}/schedules/${id}`);
+    return res.json();
+  },
 };

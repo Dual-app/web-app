@@ -1,37 +1,30 @@
-function Dashboard() {
-  const stats = {
-    totalBookings: 12,
-    totalCases: 7,
-    totalPayments: 5,
-    completedAppointments: 3,
-  };
+import React, { useEffect, useState } from "react";
 
-  const recentBookings = [
-    {
-      id: "BKG-001",
-      client: "Mya Nandar",
-      lawyer: "John Doe",
-      status: "Scheduled",
-      date: "2025-11-02",
-      time: "10:00 AM",
-    },
-    {
-      id: "BKG-002",
-      client: "David Lin",
-      lawyer: "Jane Smith",
-      status: "Paid",
-      date: "2025-11-04",
-      time: "2:30 PM",
-    },
-    {
-      id: "BKG-003",
-      client: "Aung Kyaw",
-      lawyer: "U Soe Win",
-      status: "Completed",
-      date: "2025-10-25",
-      time: "11:00 AM",
-    },
-  ];
+function Dashboard() {
+  const [stats, setStats] = useState({
+    totalBookings: 0,
+    totalClients: 0,
+    totalPayments: 0,
+    completedAppointments: 0,
+  });
+
+  const [recentBookings, setRecentBookings] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/dashboard/stats")
+      .then((res) => res.json())
+      .then((data) => {
+        setStats({
+          totalBookings: data.totalBookings,
+          totalClients: data.totalClients,
+          totalPayments: data.totalPayments,
+          completedAppointments: data.completedAppointments,
+        });
+
+        setRecentBookings(data.recentBookings);
+      })
+      .catch((err) => console.error("Dashboard load error:", err));
+  }, []);
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen text-gray-900">
@@ -48,9 +41,9 @@ function Dashboard() {
           </h2>
         </div>
         <div className="bg-white p-6 rounded-xl shadow">
-          <p className="text-gray-500 text-sm">Total Cases</p>
+          <p className="text-gray-500 text-sm">Total Clients</p>
           <h2 className="text-3xl font-bold text-[#83B582] mt-1">
-            {stats.totalCases}
+            {stats.totalClients}
           </h2>
         </div>
         <div className="bg-white p-6 rounded-xl shadow">
@@ -105,7 +98,7 @@ function Dashboard() {
                       className={`px-2 py-1 rounded-full text-xs font-medium ${
                         b.status === "Scheduled"
                           ? "bg-blue-100 text-blue-700"
-                          : b.status === "Paid"
+                          : b.status === "Pending"
                           ? "bg-yellow-100 text-yellow-700"
                           : "bg-green-100 text-green-700"
                       }`}
@@ -114,8 +107,12 @@ function Dashboard() {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <span className="block text-sm text-gray-800">{b.date}</span>
-                    <span className="block text-xs text-gray-500">{b.time}</span>
+                    <span className="block text-sm text-gray-800">
+                      {b.date || "Pending"}
+                    </span>
+                    <span className="block text-xs text-gray-500">
+                      {b.time || ""}
+                    </span>
                   </td>
                 </tr>
               ))}

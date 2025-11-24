@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const LawyerScheduleSchema = new mongoose.Schema({
     Lawyer_ID: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Number ,
     ref: "Lawyer",
     required: true,
   },

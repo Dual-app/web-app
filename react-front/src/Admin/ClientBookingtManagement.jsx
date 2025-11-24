@@ -1,114 +1,78 @@
 import React, { useState, useEffect } from "react";
+import { useBookings } from "../hooks/BookingHook";
+import { LawyerScheduleAPI } from "../api/LawyerScheduleAPI";
 
 export default function ClientBookingManagement() {
-  const [bookings, setBookings] = useState([]);
+  const { bookings, fetchBookings, assignSchedule } = useBookings();
+  const [localBookings, setLocalBookings] = useState([]);
+
   const [schedules, setSchedules] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [selectedSchedule, setSelectedSchedule] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
-  //---------------------------------------------------------
-  // Fetch all client bookings (mock for now)
-  //---------------------------------------------------------
+  // Load all bookings
   useEffect(() => {
-    const mockBookings = [
-      {
-        Booking_ID: "BKG-001",
-        Client_Name: "Mya Nandar",
-        Lawyer_Name: "John Doe",
-        Lawyer_ID: "L001",
-        Case_Type: "Corporate",
-        Payment_Status: "Paid",
-      },
-      {
-        Booking_ID: "BKG-002",
-        Client_Name: "David Lin",
-        Lawyer_Name: "Jane Smith",
-        Lawyer_ID: "L002",
-        Case_Type: "Family",
-        Payment_Status: "Pending",
-      },
-      {
-        Booking_ID: "BKG-003",
-        Client_Name: "Aye Chan",
-        Lawyer_Name: "John Doe",
-        Lawyer_ID: "L001",
-        Case_Type: "Property",
-        Payment_Status: "Paid",
-      },
-    ];
-
-    setBookings(mockBookings);
+    fetchBookings();
   }, []);
 
-  //---------------------------------------------------------
-  // Fetch all lawyer schedules (mock for now)
-  //---------------------------------------------------------
   useEffect(() => {
-    const mockSchedules = [
-      { Schedule_ID: "S001", Lawyer_ID: "L001", Date: "2025-11-10", Start: "10:00", Status: "Available" },
-      { Schedule_ID: "S002", Lawyer_ID: "L001", Date: "2025-11-10", Start: "10:45", Status: "Available" },
-      { Schedule_ID: "S003", Lawyer_ID: "L002", Date: "2025-11-11", Start: "10:00", Status: "Available" },
-    ];
-    setSchedules(mockSchedules);
-  }, []);
+    setLocalBookings(bookings);
+  }, [bookings]);
 
-  //---------------------------------------------------------
-  // Filter schedules belonging to selected booking's lawyer
-  //---------------------------------------------------------
-  const availableSchedules = selectedBooking
-    ? schedules.filter(
-        (s) => s.Lawyer_ID === selectedBooking.Lawyer_ID && s.Status === "Available"
+  // Load schedules
+  useEffect(() => {
+    if (!selectedBooking) return;
+
+    LawyerScheduleAPI.getAll()
+      .then((all) => {
+        const filtered = all.filter(
+          (s) =>
+            Number(s.Lawyer_ID) === Number(selectedBooking.LawyerID) &&
+            s.Status === "Available"
+        );
+        setSchedules(filtered);
+      })
+      .catch(() => setSchedules([]));
+  }, [selectedBooking]);
+
+  const availableSchedules = schedules;
+
+  const handleClose = async (bookingID) => {
+    setLocalBookings((prev) =>
+      prev.map((b) =>
+        b.BookingID === bookingID ? { ...b, Status: "Closed" } : b
       )
-    : [];
+    );
 
-  //---------------------------------------------------------
-  // Assign schedule to booking
-  //---------------------------------------------------------
-  const handleAssign = () => {
+    await BookingAPI.close(bookingID);
+    fetchBookings(); // refresh from server
+    alert(`Booking ${bookingID} has been closed.`);
+  };
+
+  const handleAssign = async () => {
     if (!selectedBooking || !selectedSchedule) {
-      alert("Please select a booking and a schedule.");
+      alert("Please select both booking and schedule.");
       return;
     }
 
-    const chosen = schedules.find((s) => s.Schedule_ID === selectedSchedule);
+    await assignSchedule(selectedBooking.BookingID, selectedSchedule);
 
-    // Update booking with assigned schedule
-    setBookings((prev) =>
-      prev.map((b) =>
-        b.Booking_ID === selectedBooking.Booking_ID
-          ? {
-              ...b,
-              Assigned_Date: chosen.Date,
-              Assigned_Time: chosen.Start,
-            }
-          : b
-      )
-    );
-
-    // Mark schedule as used
-    setSchedules((prev) =>
-      prev.map((s) =>
-        s.Schedule_ID === selectedSchedule ? { ...s, Status: "Booked" } : s
-      )
-    );
-
-    alert(
-      `✔ Schedule assigned!\n\nClient: ${selectedBooking.Client_Name}\nLawyer: ${selectedBooking.Lawyer_Name}\nTime: ${chosen.Date} at ${chosen.Start}`
-    );
+    alert("✔ Schedule assigned successfully!");
 
     setSelectedBooking(null);
     setSelectedSchedule("");
   };
 
-  //---------------------------------------------------------
-  // Search filters
-  //---------------------------------------------------------
-  const filteredBookings = bookings.filter(
-    (b) =>
-      b.Client_Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      b.Lawyer_Name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // FIX: Avoid crash when Name fields do not exist
+  const filteredBookings = bookings.filter((b) => {
+    const client = b.Client_Name || "";
+    const lawyer = b.Lawyer_Name || "";
+    return (
+      client.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lawyer.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
 
   return (
     <div className="bg-white rounded-lg p-8 shadow-lg w-full">
@@ -116,127 +80,113 @@ export default function ClientBookingManagement() {
         Client Booking Management
       </h2>
 
-      {/* SELECT BOOKING */}
-
-      <label className="block text-sm font-medium mb-1 text-gray-700">
-        Select Paid Booking
-      </label>
-
+      {/* Select booking */}
       <select
-        value={selectedBooking?.Booking_ID || ""}
+        value={selectedBooking?.BookingID || ""}
         onChange={(e) =>
           setSelectedBooking(
-            bookings.find((b) => b.Booking_ID === e.target.value)
+            bookings.find((b) => b.BookingID == e.target.value)
           )
         }
-        className="w-full border border-gray-300 rounded px-3 py-2 mb-4"
+        className="w-full border p-2 rounded mb-4"
       >
-        <option value="">Select a booking</option>
+        <option value="">Select a Paid Booking</option>
+
         {bookings
-          .filter((b) => b.Payment_Status === "Paid")
+          .filter((b) => b.Status === "Pending")
           .map((b) => (
-            <option key={b.Booking_ID} value={b.Booking_ID}>
-              {b.Booking_ID} — {b.Client_Name} ({b.Lawyer_Name})
+            <option key={b.BookingID} value={b.BookingID}>
+              {b.BookingID}. {b.Case_Title} ( {b.Client_Name} - {b.Lawyer_Name}{" "}
+              )
             </option>
           ))}
       </select>
 
-      {/* AUTO DETAILS OF SELECTED BOOKING */}
-      {selectedBooking && (
-        <div className="border border-gray-200 rounded p-4 bg-gray-50 mb-6">
-          <p>
-            <b>Client:</b> {selectedBooking.Client_Name}
-          </p>
-          <p>
-            <b>Lawyer:</b> {selectedBooking.Lawyer_Name}
-          </p>
-          <p>
-            <b>Case Type:</b> {selectedBooking.Case_Type}
-          </p>
-        </div>
-      )}
-
-      {/* SELECT SCHEDULE */}
+      {/* Schedules */}
       {selectedBooking && (
         <>
-          <label className="block text-sm font-medium mb-1 text-gray-700">
-            Assign Lawyer Schedule
-          </label>
+          <label>Select Lawyer Schedule</label>
           <select
             value={selectedSchedule}
             onChange={(e) => setSelectedSchedule(e.target.value)}
-            className="w-full border border-gray-300 rounded px-3 py-2 mb-6"
+            className="w-full border p-2 rounded mb-4"
           >
-            <option value="">Choose a schedule</option>
-            {availableSchedules.length > 0 ? (
-              availableSchedules.map((s) => (
-                <option key={s.Schedule_ID} value={s.Schedule_ID}>
-                  {s.Date} — {s.Start}
-                </option>
-              ))
-            ) : (
-              <option disabled>No available schedules</option>
-            )}
+            <option value="">Choose schedule</option>
+
+            {availableSchedules.map((s) => (
+              <option key={s.Schedule_ID} value={s.Schedule_ID}>
+                {s.Available_Date} — {s.Start_Time}
+              </option>
+            ))}
           </select>
 
           <button
             onClick={handleAssign}
-            className="px-6 py-2 bg-[#83B582] text-black font-semibold rounded hover:bg-[#55a754]"
+            className="px-6 py-2 bg-[#83B582] text-black font-semibold rounded"
           >
             Assign Schedule
           </button>
         </>
       )}
 
-      {/* SEARCH */}
-      <div className="mt-8 flex justify-between items-center">
-        <input
-          type="text"
-          placeholder="Search by client or lawyer..."
-          className="border px-3 py-2 rounded w-full md:w-1/3"
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
-
-      {/* TABLE */}
+      {/* Bookings Table */}
       <div className="overflow-x-auto mt-6">
         <table className="min-w-full border">
           <thead className="bg-[#83B582] text-white">
             <tr>
-              <th className="px-4 py-2 text-left">Booking ID</th>
-              <th className="px-4 py-2 text-left">Client</th>
-              <th className="px-4 py-2 text-left">Lawyer</th>
-              <th className="px-4 py-2 text-left">Case Type</th>
-              <th className="px-4 py-2 text-left">Payment</th>
-              <th className="px-4 py-2 text-left">Assigned Schedule</th>
+              <th className="px-4 py-2">Booking ID</th>
+              <th className="px-4 py-2">Client</th>
+              <th className="px-4 py-2">Lawyer</th>
+              <th className="px-4 py-2">Date</th>
+              <th className="px-4 py-2">Time</th>
+              <th className="px-4 py-2">Case</th>
+              <th className="px-4 py-2">Status</th>
+              <th className="px-4 py-2">Action</th>
             </tr>
           </thead>
+
           <tbody>
-            {filteredBookings.length > 0 ? (
-              filteredBookings.map((b) => (
-                <tr key={b.Booking_ID} className="border-t">
-                  <td className="px-4 py-2">{b.Booking_ID}</td>
-                  <td className="px-4 py-2">{b.Client_Name}</td>
-                  <td className="px-4 py-2">{b.Lawyer_Name}</td>
-                  <td className="px-4 py-2">{b.Case_Type}</td>
-                  <td className="px-4 py-2">{b.Payment_Status}</td>
+            {bookings.length === 0 ? (
+              <tr>
+                <td colSpan="6" className="text-center py-4">
+                  No bookings found.
+                </td>
+              </tr>
+            ) : (
+              localBookings.map((b) => (
+                <tr key={b.BookingID} className="border-t">
+                  <td className="px-4 py-2">{b.BookingID}</td>
+                  <td>{b.Client_Name}</td>
+                  <td>{b.Lawyer_Name}</td>
+                  <td>
+                    {b.ScheduleID ? `${b.Available_Date}` : "Not Assigned"}
+                  </td>
                   <td className="px-4 py-2">
-                    {b.Assigned_Date ? (
+                    {b.ScheduleID ? (
                       <>
-                        {b.Assigned_Date} – {b.Assigned_Time}
+                        {b.Start_Time} — {b.End_Time}
                       </>
                     ) : (
-                      <span className="text-gray-400">Not assigned</span>
+                      <span className="text-gray-400">Not Assigned</span>
+                    )}
+                  </td>
+
+                  <td className="px-4 py-2">{b.Case_Title}</td>
+                  <td className="px-4 py-2">{b.Status}</td>
+                  <td className="px-4 py-2">
+                    {b.Status !== "Closed" ? (
+                      <button
+                        onClick={() => handleClose(b.BookingID)}
+                        className="px-3 py-1 text-white bg-red-500 rounded hover:bg-red-600"
+                      >
+                        Close Case
+                      </button>
+                    ) : (
+                      <span className="text-gray-500">Closed</span>
                     )}
                   </td>
                 </tr>
               ))
-            ) : (
-              <tr>
-                <td colSpan="6" className="p-4 text-center text-gray-500">
-                  No bookings found.
-                </td>
-              </tr>
             )}
           </tbody>
         </table>

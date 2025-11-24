@@ -1,5 +1,7 @@
 const Booking = require("../model/Booking");
+const Client = require("../model/Client");
 const Payment = require("../model/Payment");
+const LawyerSchedule = require("../model/LawyerSchedule");
 
 exports.createBookingWithPayment = async (req, res) => {
   try {
@@ -29,7 +31,7 @@ exports.createBookingWithPayment = async (req, res) => {
       BookingID: nextBookingID,
       CustomerID: req.body.CustomerID,
       LawyerID: req.body.LawyerID,
-      ScheduleID:  null,
+      ScheduleID: null,
       Case_Title: req.body.Case_Title,
       Case_Description: req.body.Case_Description,
       Additional_Notes: req.body.Additional_Notes,
@@ -51,8 +53,63 @@ exports.createBookingWithPayment = async (req, res) => {
 
 exports.getAllBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find();
-    res.status(200).json(bookings);
+    const result = await Booking.aggregate([
+      {
+        $lookup: {
+          from: "clients",
+          localField: "CustomerID",
+          foreignField: "Client_ID",
+          as: "client",
+        },
+      },
+      { $unwind: "$client" },
+
+      {
+        $lookup: {
+          from: "lawyers",
+          localField: "LawyerID",
+          foreignField: "Lawyer_ID",
+          as: "lawyer",
+        },
+      },
+      { $unwind: "$lawyer" },
+
+      {
+        $lookup: {
+          from: "lawyerschedules",
+          localField: "ScheduleID",
+          foreignField: "Schedule_ID",
+          as: "schedule",
+        },
+      },
+      {
+        $unwind: {
+          path: "$schedule",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      {
+        $project: {
+          BookingID: 1,
+          CustomerID: 1,
+          LawyerID: 1,
+          Case_Title: 1,
+          Case_Description: 1,
+          Status: 1,
+          ScheduleID: 1,
+
+          Client_Name: "$client.Client_Name",
+          Lawyer_Name: "$lawyer.Lawyer_Name",
+
+          Available_Date: "$schedule.Available_Date",
+          Start_Time: "$schedule.Start_Time",
+          End_Time: "$schedule.End_Time",
+        },
+      },
+    ]);
+
+    res.json(result);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -93,6 +150,7 @@ exports.getByCustomer = async (req, res) => {
 
     const result = await Booking.aggregate([
       { $match: { CustomerID: id } },
+
       {
         $lookup: {
           from: "lawyers",
@@ -102,6 +160,46 @@ exports.getByCustomer = async (req, res) => {
         },
       },
       { $unwind: "$lawyer" },
+
+      {
+        $lookup: {
+          from: "lawyerschedules",
+          localField: "ScheduleID",
+          foreignField: "Schedule_ID",
+          as: "schedule",
+        },
+      },
+      {
+        $unwind: {
+          path: "$schedule",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      {
+        $lookup: {
+          from: "clients",
+          localField: "CustomerID",
+          foreignField: "Client_ID",
+          as: "client",
+        },
+      },
+      { $unwind: "$client" },
+
+      {
+        $project: {
+          BookingID: 1,
+          Case_Title: 1,
+          Status: 1,
+
+          Lawyer_Name: "$lawyer.Lawyer_Name",
+          Client_Name: "$client.Client_Name",
+
+          Available_Date: "$schedule.Available_Date",
+          Start_Time: "$schedule.Start_Time",
+          End_Time: "$schedule.End_Time",
+        },
+      },
     ]);
 
     res.json(result);
@@ -112,19 +210,48 @@ exports.getByCustomer = async (req, res) => {
 
 exports.insertScheduleID = async (req, res) => {
   try {
-    const bookingId = Number(req.params.id);
+    const bookingID = req.params.id;
     const { ScheduleID } = req.body;
-    const updatedBooking = await Booking.findOneAndUpdate(
-      { BookingID: bookingId },
-      { ScheduleID: ScheduleID },
-      { new: true }
-    );
-    if (!updatedBooking) {
-      return res.status(404).json({ message: "Booking not found" });
+
+    if (!ScheduleID) {
+      return res.status(400).json({ message: "ScheduleID is required." });
     }
-    res.status(200).json(updatedBooking);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+
+    // Find booking
+    const booking = await Booking.findOne({ BookingID: bookingID });
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found." });
+    }
+
+    // Find schedule by correct field
+    const schedule = await LawyerSchedule.findOne({ Schedule_ID: ScheduleID });
+    if (!schedule) {
+      return res.status(404).json({ message: "Schedule not found." });
+    }
+
+    // Ensure schedule belongs to the same lawyer
+    if (String(schedule.Lawyer_ID) !== String(booking.LawyerID)) {
+      return res.status(400).json({
+        message: "Schedule does not belong to the assigned lawyer.",
+      });
+    }
+
+    // Update schedule
+    schedule.Status = "Booked";
+    await schedule.save();
+
+    // Update booking
+    booking.ScheduleID = ScheduleID;
+    booking.Status = "Booked";
+    await booking.save();
+
+    res.json({
+      message: "Schedule assigned successfully.",
+      booking,
+    });
+  } catch (err) {
+    console.error("Schedule Insert Error:", err);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -140,3 +267,5 @@ exports.previewDocument = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+

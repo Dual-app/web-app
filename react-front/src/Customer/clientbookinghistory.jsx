@@ -69,15 +69,13 @@ export default function ClientBookingHistory() {
                 >
                   <td className="px-4 py-3 font-semibold">{b.BookingID}</td>
                   <td className="px-4 py-3">{b.Case_Title}</td>
-                  <td className="px-4 py-3">{b.lawyer.Lawyer_Name}</td>
+                  <td className="px-4 py-3">{b.Lawyer_Name || "-"}</td>
+
+                  <td className="px-4 py-3">{b.Available_Date || "-"}</td>
 
                   <td className="px-4 py-3">
-                    {b.BookingDate
-                      ? new Date(b.BookingDate).toLocaleDateString()
-                      : "-"}
+                    {b.Start_Time ? `${b.Start_Time} - ${b.End_Time}` : "-"}
                   </td>
-
-                  <td className="px-4 py-3">{b.BookingTime || "-"}</td>
 
                   <td className="px-4 py-3">
                     <span

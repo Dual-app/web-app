@@ -48,6 +48,16 @@ export const useLawyer = () => {
     }
   };
 
+  const getscheduleByLawyer = async (id) => {
+    setError(null);
+    try {
+      const data = await LawyerAPI.getscheduleByLawyer(id);
+      return data;
+    } catch (err) {
+      setError("Failed to fetch lawyer schedule");
+    }
+  };
+
   useEffect(() => {
     fetchLawyers();
   }, []);
@@ -60,5 +70,6 @@ export const useLawyer = () => {
     updateLawyer,
     deleteLawyer,
     fetchLawyers,
+    getscheduleByLawyer,
   };
 };

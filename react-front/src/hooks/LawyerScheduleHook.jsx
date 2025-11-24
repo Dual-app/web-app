@@ -5,29 +5,34 @@ export const useLawyerSchedule = () => {
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-    const fetchSchedules = async () => {
+
+  const fetchSchedules = async () => {
     setLoading(true);
     setError(null);
     try {
       const data = await LawyerScheduleAPI.getAll();
-      setSchedules(data);
-    }
-    catch (err) {
-        setError("Failed to fetch lawyer schedules");   
+
+      // 🔥 FIX: Always ensure schedules is an array
+      setSchedules(Array.isArray(data) ? data : []);
+      
+    } catch (err) {
+      setError("Failed to fetch lawyer schedules");
+      setSchedules([]); // prevent crash
     }
     setLoading(false);
   };
 
-    const createSchedule = async (schedule) => {
+  const createSchedule = async (schedule) => {
     setError(null);
     try {
       await LawyerScheduleAPI.create(schedule);
       fetchSchedules();
     } catch (err) {
-      setError(err.message); // Show backend error (e.g., duplicate)
+      setError(err.message);
     }
   };
-    const updateSchedule = async (id, schedule) => {
+
+  const updateSchedule = async (id, schedule) => {
     setError(null);
     try {
       await LawyerScheduleAPI.update(id, schedule);
@@ -35,19 +40,19 @@ export const useLawyerSchedule = () => {
     } catch (err) {
       setError("Failed to update lawyer schedule");
     }
-    };
+  };
 
-    const deleteSchedule = async (id) => {
+  const deleteSchedule = async (id) => {
     setError(null);
     try {
       await LawyerScheduleAPI.delete(id);
       fetchSchedules();
+    } catch (err) {
+      setError("Failed to delete lawyer schedule");
     }
-    catch (err) {
-        setError("Failed to delete lawyer schedule");   
-    }
-    };
-    useEffect(() => {
+  };
+
+  useEffect(() => {
     fetchSchedules();
   }, []);
 
@@ -58,7 +63,6 @@ export const useLawyerSchedule = () => {
     createSchedule,
     deleteSchedule,
     updateSchedule,
-    fetchSchedules
+    fetchSchedules,
   };
 };
-
