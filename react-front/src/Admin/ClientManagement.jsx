@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useClient } from "../hooks/ClientHook";
 
 function ClientManagement() {
   const {
@@ -100,7 +101,7 @@ function ClientManagement() {
 
   // Search
   const filteredClients = clients.filter((client) =>
-    client.Full_Name.toLowerCase().includes(searchTerm.toLowerCase())
+    client.Client_Name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (

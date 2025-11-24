@@ -12,7 +12,7 @@ import CustomerLayout from "../customerlayout";
 import AboutUs from "../Customer/aboutus";
 import Lawbook from "../Customer/lawbook";
 import Lawyer from "../Customer/lawyer";
-import Topup from "../Customer/topuppg";
+import Payment from "../Customer/payment";
 import TermsAndConditions from "../Customer/terms&conditions";
 import Clientbooking from "../Customer/clientbooking";
 import PostCase from "../Customer/posecase";
@@ -77,7 +77,7 @@ const router = createBrowserRouter([
       { path: "aboutus", element: <AboutUs /> },
       { path: "lawbook", element: <Lawbook /> },
       { path: "lawyer", element: <Lawyer /> },
-      { path: "topuppg", element: <Topup /> },
+      { path: "payment", element: <Payment /> },
       { path: "termsandconditions", element: <TermsAndConditions /> },
       { path: "clientbooking", element: <Clientbooking /> },
       { path: "postcase", element: <PostCase /> },

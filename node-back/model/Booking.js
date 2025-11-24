@@ -3,9 +3,9 @@ const Lawyer = require("./Lawyer");
 
 const BookingSchema = new mongoose.Schema({
   BookingID: { type: Number, required: true, unique: true },
-  CustomerID: { type: Number, required: true, ref: "Customer" }, 
-  BookingDate: { type: Date, required: false },
-  BookingTime: { type: String, required: false },
+  CustomerID: { type: Number, required: true, ref: "Customer" },
+  ScheduleID: { type: Number, required: false, ref: "LawyerSchedule" },
+  PaymentID: { type: Number, required: true, ref: "Payment" },
   LawyerID: { type: Number, required: true, ref: Lawyer },
   Case_Title: { type: String, required: true },
   Case_Description: { type: String, required: true },

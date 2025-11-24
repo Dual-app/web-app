@@ -13,6 +13,7 @@ const AdminRoutes = require("./routes/AdminRoutes");
 const LawbookRoutes = require("./routes/LawbookRoutes");
 const ClientRoutes = require("./routes/ClientRoute");
 const BookingRoutes = require("./routes/BookingRoute");
+const PaymentRoutes = require("./routes/PaymentRoutes");
 const AuthRoutes = require("./routes/AuthRoutes");
 
 mongoose
@@ -36,4 +37,5 @@ app.use("/api/admins", AdminRoutes);
 app.use("/api/lawbooks", LawbookRoutes);
 app.use("/api/clients", ClientRoutes);
 app.use("/api/bookings", BookingRoutes);
+app.use("/api/payments", PaymentRoutes);
 app.use("/api/auth", AuthRoutes);

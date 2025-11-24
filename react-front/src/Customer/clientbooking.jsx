@@ -58,10 +58,14 @@ export default function ClientBooking() {
   const handleBooking = () => {
     const nextErrors = {};
 
-    if (!customerID.trim()) nextErrors.customerID = "Customer ID is required.";
-    if (!clientName.trim()) nextErrors.clientName = "Full name is required.";
-    if (!selectedCaseType) nextErrors.caseType = "Please select a case type.";
-    if (!selectedLawyer) nextErrors.lawyer = "Please select a lawyer.";
+    // Only validate fields user must select
+    if (!selectedCaseType.trim()) {
+      nextErrors.caseType = "Case type is required.";
+    }
+
+    if (!selectedLawyer) {
+      nextErrors.lawyer = "Please select a lawyer.";
+    }
 
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
@@ -72,19 +76,23 @@ export default function ClientBooking() {
   };
 
   // FINAL BOOKING SUBMISSION
-  const handleCaseSubmit = async (e) => {
+  const handleCaseSubmit = (e) => {
     e.preventDefault();
 
     const nextErrors = {};
-    if (!caseData.caseTitle.trim())
+
+    if (!caseData.caseTitle.trim()) {
       nextErrors.caseTitle = "Case title is required.";
-    if (!caseData.caseDescription.trim())
+    }
+
+    if (!caseData.caseDescription.trim()) {
       nextErrors.caseDescription = "Case description is required.";
+    }
 
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
 
-    const payload = {
+    const bookingPayload = {
       CustomerID: customerID,
       LawyerID: selectedLawyer.Lawyer_ID,
       Case_Title: caseData.caseTitle,
@@ -93,12 +101,7 @@ export default function ClientBooking() {
       Document: caseData.document,
     };
 
-    try {
-      await createBooking(payload);
-      alert(`Booking ${bookingId} submitted successfully!`);
-    } catch (error) {
-      alert("Error submitting booking");
-    }
+    navigate("/customer/payment", { state: bookingPayload });
   };
 
   const handleCaseChange = (e) => {
@@ -132,7 +135,6 @@ export default function ClientBooking() {
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
               {/* CUSTOMER ID */}
               <input type="hidden" value={customerID} />
 
@@ -170,6 +172,9 @@ export default function ClientBooking() {
                   <option value="Property">Property</option>
                   <option value="Immigration">Immigration</option>
                 </select>
+                {errors.caseType && (
+                  <p className="text-red-500 text-sm mt-1">{errors.caseType}</p>
+                )}
               </div>
 
               {/* Notes */}
@@ -228,6 +233,9 @@ export default function ClientBooking() {
                   ))}
                 </div>
               )}
+              {errors.lawyer && (
+                <p className="text-red-500 text-sm mt-2">{errors.lawyer}</p>
+              )}
             </div>
 
             <button
@@ -263,6 +271,11 @@ export default function ClientBooking() {
                     errors.caseTitle ? "border-red-500" : "border-gray-300"
                   }`}
                 />
+                {errors.caseTitle && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.caseTitle}
+                  </p>
+                )}
               </div>
 
               {/* Case Description */}
@@ -280,6 +293,11 @@ export default function ClientBooking() {
                       : "border-gray-300"
                   }`}
                 />
+                {errors.caseDescription && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.caseDescription}
+                  </p>
+                )}
               </div>
 
               {/* Document */}

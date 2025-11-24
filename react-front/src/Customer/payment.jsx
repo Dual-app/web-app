@@ -1,8 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { useBookings } from "../hooks/BookingHook";
+import { useAuth } from "../content/AuthContext";
 
-export default function Topup() {
+export default function Payment() {
   const navigate = useNavigate();
+  const { createBooking } = useBookings();
+  const location = useLocation();
+  const bookingData = location.state; // ⭐ Received booking data
+  const { auth } = useAuth();
 
   // Example: Get client ID from login/session
   const clientId = localStorage.getItem("clientId") || "CL-0001";
@@ -35,11 +42,6 @@ export default function Topup() {
     e.preventDefault();
 
     const nextErrors = {};
-    if (!formData.fullName.trim())
-      nextErrors.fullName = "Full Name is required.";
-    if (!formData.email.trim()) nextErrors.email = "Email is required.";
-    if (!formData.consultationType.trim())
-      nextErrors.consultationType = "Please choose your consultation type.";
     if (!formData.paymentMethod)
       nextErrors.paymentMethod = "Please select a payment method.";
 
@@ -49,26 +51,22 @@ export default function Topup() {
     setLoading(true);
 
     try {
-      //  Backend connection example (adjust endpoint as needed)
-      // const res = await fetch("http://localhost:5000/topup", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(formData),
-      // });
-      // if (!res.ok) throw new Error("Payment submission failed");
+      const finalData = {
+        ...bookingData,
+        Amount: formData.amount,
+        PaymentDate: new Date().toISOString(),
+        PaymentMethod: formData.paymentMethod,
+      };
 
-      console.log("Payment Data:", formData);
+      await createBooking(finalData);
 
-      // Simulate success message
-      setTimeout(() => {
-        setSuccess(true);
-        setLoading(false);
-        setTimeout(() => navigate("/post-case"), 2500);
-      }, 1500);
+      setSuccess(true);
+      // setTimeout(() => navigate("/home"), 2000);
     } catch (err) {
-      setLoading(false);
-      alert("Something went wrong. Please try again later.");
+      alert("Failed to process payment or booking");
     }
+
+    setLoading(false);
   };
 
   return (
@@ -120,12 +118,11 @@ export default function Topup() {
               <input
                 type="text"
                 name="fullName"
-                value={formData.fullName}
-                onChange={handleChange}
-                placeholder="Enter your full name"
+                value={auth.user.name}
                 className={`mt-1 w-full rounded border px-3 py-2 focus:outline-none focus:border-[#83B582] ${
                   errors.fullName ? "border-red-500" : "border-gray-300"
                 }`}
+                readOnly
               />
               {errors.fullName && (
                 <p className="text-sm text-red-500 mt-1">{errors.fullName}</p>
@@ -140,18 +137,16 @@ export default function Topup() {
               <input
                 type="email"
                 name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="Enter your email"
+                value={auth.user.email}
                 className={`mt-1 w-full rounded border px-3 py-2 focus:outline-none focus:border-[#83B582] ${
                   errors.email ? "border-red-500" : "border-gray-300"
                 }`}
+                readOnly
               />
               {errors.email && (
                 <p className="text-sm text-red-500 mt-1">{errors.email}</p>
               )}
             </div>
-
 
             {/* Amount (Fixed) */}
             <div className="mb-4">
@@ -197,13 +192,13 @@ export default function Topup() {
 
             {/* Information Note */}
             <div className="bg-gray-50 border border-gray-200 rounded-md p-3 mb-4 text-sm text-gray-600">
-  💡 <b>Note:</b> The $100 fee covers your consultation with a lawyer for 
-  <b> one case</b>. You do not need to pay again for additional consultations 
-  related to this case. <br /> <br />
-  🔁 If your assigned lawyer is unable to take your case, 
-  <b> $100 will be refunded</b> by cash.
-</div>
-
+              💡 <b>Note:</b> The $100 fee covers your consultation with a
+              lawyer for
+              <b> one case</b>. You do not need to pay again for additional
+              consultations related to this case. <br /> <br />
+              🔁 If your assigned lawyer is unable to take your case,
+              <b> $100 will be refunded</b> by cash.
+            </div>
 
             {/* Submit Button */}
             <button

@@ -43,7 +43,7 @@ exports.login = async (req, res) => {
 
     // Correct name field for Admin/Client
     const userName = user.Admin_Name || user.Client_Name;
-
+    const userEmail = user.Admin_Email || user.Client_Email;
     const userID = user.Admin_ID || user.Client_ID;
 
     // Create token
@@ -62,6 +62,7 @@ exports.login = async (req, res) => {
       user: {
         id: userID,
         role,
+        email: userEmail,
         name: userName,
       },
     });
