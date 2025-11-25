@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useBookings } from "../hooks/BookingHook";
 import { LawyerScheduleAPI } from "../api/LawyerScheduleAPI";
+import { BookingAPI } from "../api/BookingAPI";
 
 export default function ClientBookingManagement() {
-  const { bookings, fetchBookings, assignSchedule } = useBookings();
+  const { bookings, setBookings, fetchBookings, assignSchedule } =
+    useBookings();
   const [localBookings, setLocalBookings] = useState([]);
 
   const [schedules, setSchedules] = useState([]);
@@ -45,8 +47,8 @@ export default function ClientBookingManagement() {
       )
     );
 
-    await BookingAPI.close(bookingID);
-    fetchBookings(); // refresh from server
+    await BookingAPI.close(bookingID); // now it works
+    fetchBookings();
     alert(`Booking ${bookingID} has been closed.`);
   };
 

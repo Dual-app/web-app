@@ -14,11 +14,10 @@ export default function ClientBookingHistory() {
   }, [auth, navigate]);
 
   const customerID = auth?.user?.id?.toString();
-  const { bookings, loading, fetchHistory } = useBookingHistory(customerID);
+  const { bookings, setBookings, loading, fetchHistory } =useBookingHistory(customerID);
 
   // Handle close
   const handleClose = async (bookingID) => {
-    // Optimistic update
     setBookings((prev) =>
       prev.map((b) =>
         b.BookingID === bookingID ? { ...b, Status: "Closed" } : b

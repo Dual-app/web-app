@@ -76,5 +76,5 @@ export const useBookingHistory = (customerID) => {
     fetchHistory();
   }, [customerID]);
 
-  return { bookings, loading, fetchHistory }; // ⭐ MUST RETURN fetchHistory
+  return { bookings, setBookings, loading, fetchHistory }; // ⭐ MUST RETURN fetchHistory
 };
