@@ -1,4 +1,6 @@
 import React from "react";
+import { Link } from "react-router-dom";
+
 
 export default function TermsAndConditions() {
   return (
@@ -151,7 +153,13 @@ export default function TermsAndConditions() {
           </ul>
         </section>
 
-        <div className="border-t mt-8 pt-4 text-center text-sm text-gray-500">
+        <Link to="/home">
+          <button className="mt-6 w-full bg-[#83B582] text-black py-3 rounded-lg font-medium hover:bg-[#55a754] transition">
+            Back to Home
+          </button>
+        </Link>
+
+        <div className="border-t mt-10 pt-4 text-center text-sm text-gray-500">
           © {new Date().getFullYear()} LegalEase Law Firm. All rights reserved.
         </div>
       </div>

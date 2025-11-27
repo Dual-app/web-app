@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLawbooks } from "../hooks/LawbookHook";
+import CustomerNav from "../Components/CustomerNav";
 
 export default function LawBookPage() {
   const [search, setSearch] = useState("");
@@ -32,6 +33,8 @@ export default function LawBookPage() {
   });
 
   return (
+    <div>
+      <CustomerNav /> 
     <div className="min-h-screen bg-gray-50 text-gray-900">
       {/* HEADER */}
       <header className="bg-[#1A3636] text-white py-12 text-center">
@@ -157,5 +160,6 @@ export default function LawBookPage() {
         </div>
       </footer>
     </div>
+      </div>
   );
 }

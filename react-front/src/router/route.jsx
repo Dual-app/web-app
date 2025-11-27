@@ -20,48 +20,60 @@ import ClientBookingHistory from "../Customer/clientbookinghistory";
 import ClientManagement from "../Admin/ClientManagement";
 import { useAuth } from "../content/AuthContext";
 
-
 // Route protection components
 function ProtectedAdmin({ children }) {
   const { auth } = useAuth();
 
   if (!auth) return <Navigate to="/" replace />;
 
-  return auth.user.role === "admin" || auth.user.role === "superadmin"
-    ? children
-    : <Navigate to="/" replace />;
+  return auth.user.role === "admin" || auth.user.role === "superadmin" ? (
+    children
+  ) : (
+    <Navigate to="/" replace />
+  );
 }
-
 
 function ProtectedCustomer({ children }) {
   const { auth } = useAuth();
 
   if (!auth) return <Navigate to="/" replace />;
 
-  return auth.user.role === "customer" ||
-    auth.user.role === "admin" ||
-    auth.user.role === "superadmin"
-    ? children
-    : <Navigate to="/" replace />;
+  return auth.user.role === "customer" ? (
+    children
+  ) : (
+    <Navigate to="/" replace />
+  );
 }
-
 
 function ProtectedSuperAdmin({ children }) {
   const { auth } = useAuth();
 
   if (!auth) return <Navigate to="/" replace />;
 
-  return auth.user.role === "superadmin"
-    ? children
-    : <AdminError />;
+  return auth.user.role === "superadmin" ? children : <AdminError />;
 }
-
 
 const router = createBrowserRouter([
   // HOME
   {
     path: "/",
     element: <Home />,
+  },
+  {
+    path: "/customer/aboutus",
+    element: <AboutUs />,
+  },
+  {
+    path: "/customer/lawbook",
+    element: <Lawbook />,
+  },
+  {
+    path: "/customer/lawyer",
+    element: <Lawyer />,
+  },
+  {
+    path: "/customer/termsandconditions",
+    element: <TermsAndConditions />,
   },
 
   // CUSTOMER AREA
@@ -74,11 +86,7 @@ const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <Navigate to="home" replace /> },
-      { path: "aboutus", element: <AboutUs /> },
-      { path: "lawbook", element: <Lawbook /> },
-      { path: "lawyer", element: <Lawyer /> },
       { path: "payment", element: <Payment /> },
-      { path: "termsandconditions", element: <TermsAndConditions /> },
       { path: "clientbooking", element: <Clientbooking /> },
       { path: "postcase", element: <PostCase /> },
       { path: "clientbookinghistory", element: <ClientBookingHistory /> },
@@ -106,7 +114,7 @@ const router = createBrowserRouter([
         path: "clientbookingmanagement",
         element: <ClientBookingManagement />,
       },
-      {path: "clientmanagement", element: <ClientManagement />},
+      { path: "clientmanagement", element: <ClientManagement /> },
 
       // AdminManagement - only for superadmins
       {
