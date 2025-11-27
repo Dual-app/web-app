@@ -32,18 +32,6 @@ export default function Home() {
               From complex corporate matters to personal disputes, our team brings
               practical strategy and transparent communication.
             </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link to="/customer/lawyer"
-                className="inline-block rounded bg-white px-4 py-2 text-sm font-medium text-black hover:opacity-90"
-              >
-                View Lawyer
-              </Link>
-              <Link to="/customer/lawbook"
-                className="inline-block rounded bg-white px-4 py-2 text-sm font-medium text-black hover:opacity-90"
-              >
-                Read Lawbook
-              </Link>
-            </div>
           </div>
         </div>
       </header>

@@ -47,11 +47,11 @@ export default function Postcase() {
     setErrors(nextErrors);
 
     if (Object.keys(nextErrors).length === 0) {
-      // Simulate backend submission
+    
       console.log("Case Submitted:", formData);
       setSuccess(true);
 
-      // Simulate saving and then redirect to payment
+     
       setTimeout(() => {
         navigate(`/top-up?bookingId=${formData.bookingId}`);
       }, 2500);
