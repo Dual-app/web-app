@@ -221,7 +221,57 @@ function LawyerManagement() {
               )}
             </div>
 
-            
+            {/* Phone */}
+            <div>
+              <input
+                type="text"
+                name="Lawyer_Phone"
+                value={formData.Lawyer_Phone}
+                onChange={handleChange}
+                className={`form-control w-full border rounded px-3 py-2 focus:border-black focus:shadow-none ${
+                  formError && !formData.Lawyer_Phone.trim()
+                    ? "border-red-500"
+                    : "border-gray-300"
+                }`}
+                placeholder="Phone Number"
+              />
+              {formError && !formData.Lawyer_Phone.trim() && (
+                <small className="text-sm text-[#d9534f]">
+                  Phone Number is required.
+                </small>
+              )}
+            </div>
+
+            {/* Type */}
+            <div>
+              <select
+                name="Lawyer_Type"
+                value={formData.Lawyer_Type}
+                onChange={handleChange}
+                className={`form-control w-full border rounded px-3 py-2 focus:border-black focus:shadow-none ${
+                  formError && !formData.Lawyer_Type.trim()
+                    ? "border-red-500"
+                    : "border-gray-300"
+                }`}
+              >
+                <option value="" disabled>
+                  Select Type
+                </option>
+                <option value="Criminal">Criminal</option>
+                <option value="Business">Business</option>
+                <option value="Family">Family</option>
+                <option value="Corporate">Corporate</option>
+                <option value="Insurance">Insurance</option>
+                <option value="Property">Property</option>
+                <option value="Immigration">Immigration</option>
+              </select>
+              {formError && !formData.Lawyer_Type.trim() && (
+                <small className="text-sm text-[#d9534f]">
+                  Type of Lawyer is required.
+                </small>
+              )}
+            </div>
+
           </div>
 
           <button
