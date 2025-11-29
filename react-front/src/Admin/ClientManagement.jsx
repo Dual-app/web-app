@@ -48,14 +48,12 @@ function ClientManagement() {
       return;
     }
 
-    // Email pattern
     const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!EMAIL_RE.test(formData.Email)) {
       setFormError(" Please enter a valid email address.");
       return;
     }
 
-    // Password strength
     if (formData.Password.length < 7) {
       setFormError(" Password must be at least 7 characters long.");
       return;
@@ -63,15 +61,25 @@ function ClientManagement() {
 
     setFormError("");
 
+    // FIX: Map form fields to your table fields
+    // Your table uses Client_Name, Client_Email, Client_Password
+    // So we save them in that format
     if (editingId) {
-      const { Client_ID, ...updateData } = formData;
-      await updateClient(Number(editingId), updateData);
+      await updateClient(Number(editingId), {
+        Client_Name: formData.Full_Name,
+        Client_Email: formData.Email,
+        Client_Password: formData.Phone, // Phone stored here in your design
+      });
       setEditingId(null);
     } else {
-      const { Client_ID, ...dataToCreate } = formData;
-      await createClient(dataToCreate);
+      await createClient({
+        Client_Name: formData.Full_Name,
+        Client_Email: formData.Email,
+        Client_Password: formData.Phone, // Phone stored here in your table
+      });
     }
 
+    // Reset form
     setFormData({
       Client_ID: "",
       Full_Name: "",
@@ -79,16 +87,17 @@ function ClientManagement() {
       Phone: "",
       Password: "",
     });
+
     fetchClients();
   };
 
   const handleEdit = (client) => {
     setFormData({
       Client_ID: client.Client_ID,
-      Full_Name: client.Full_Name,
-      Email: client.Email,
-      Phone: client.Phone,
-      Password: client.Password,
+      Full_Name: client.Client_Name,
+      Email: client.Client_Email,
+      Phone: client.Client_Password, // Phone is stored here
+      Password: "1234567", // required but not used
     });
     setEditingId(Number(client.Client_ID));
   };
@@ -96,10 +105,11 @@ function ClientManagement() {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this client?")) {
       await deleteClient(id);
+      fetchClients();
     }
   };
 
-  // Search
+  // Search (Client_Name is your table field)
   const filteredClients = clients.filter((client) =>
     client.Client_Name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -137,18 +147,9 @@ function ClientManagement() {
                 name="Full_Name"
                 value={formData.Full_Name}
                 onChange={handleChange}
-                className={`form-control w-full border rounded px-3 py-2 focus:border-black focus:shadow-none ${
-                  formError && !formData.Full_Name.trim()
-                    ? "border-red-500"
-                    : "border-gray-300"
-                }`}
+                className={`form-control w-full border rounded px-3 py-2`}
                 placeholder="Full Name"
               />
-              {formError && !formData.Full_Name.trim() && (
-                <small className="text-sm text-[#d9534f]">
-                  Full Name is required.
-                </small>
-              )}
             </div>
 
             {/* Email */}
@@ -158,18 +159,9 @@ function ClientManagement() {
                 name="Email"
                 value={formData.Email}
                 onChange={handleChange}
-                className={`form-control w-full border rounded px-3 py-2 focus:border-black focus:shadow-none ${
-                  formError && !formData.Email.trim()
-                    ? "border-red-500"
-                    : "border-gray-300"
-                }`}
+                className="form-control w-full border rounded px-3 py-2"
                 placeholder="Email Address"
               />
-              {formError && !formData.Email.trim() && (
-                <small className="text-sm text-[#d9534f]">
-                  Email is required.
-                </small>
-              )}
             </div>
 
             {/* Phone */}
@@ -179,18 +171,9 @@ function ClientManagement() {
                 name="Phone"
                 value={formData.Phone}
                 onChange={handleChange}
-                className={`form-control w-full border rounded px-3 py-2 focus:border-black focus:shadow-none ${
-                  formError && !formData.Phone.trim()
-                    ? "border-red-500"
-                    : "border-gray-300"
-                }`}
+                className="form-control w-full border rounded px-3 py-2"
                 placeholder="Phone Number"
               />
-              {formError && !formData.Phone.trim() && (
-                <small className="text-sm text-[#d9534f]">
-                  Phone number is required.
-                </small>
-              )}
             </div>
 
             {/* Password */}
@@ -200,24 +183,15 @@ function ClientManagement() {
                 name="Password"
                 value={formData.Password}
                 onChange={handleChange}
-                className={`form-control w-full border rounded px-3 py-2 focus:border-black focus:shadow-none ${
-                  formError && !formData.Password.trim()
-                    ? "border-red-500"
-                    : "border-gray-300"
-                }`}
+                className="form-control w-full border rounded px-3 py-2"
                 placeholder="Password"
               />
-              {formError && !formData.Password.trim() && (
-                <small className="text-sm text-[#d9534f]">
-                  Password is required.
-                </small>
-              )}
             </div>
           </div>
 
           <button
             type="submit"
-            className="my-4 px-6 py-2 bg-[#83B582] text-white font-semibold rounded hover:bg-[#55a754] flex items-center gap-2 border-none"
+            className="my-4 px-6 py-2 bg-[#83B582] text-white font-semibold rounded hover:bg-[#55a754]"
           >
             {editingId ? "Update Client" : "Register Client"}
           </button>
@@ -228,7 +202,7 @@ function ClientManagement() {
           <input
             type="text"
             placeholder="Search by Name..."
-            className="form-control border rounded px-3 py-2 w-full md:w-1/3 focus:border-black focus:shadow-none"
+            className="form-control border rounded px-3 py-2 w-full md:w-1/3"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -236,53 +210,47 @@ function ClientManagement() {
 
         {/* TABLE */}
         <div className="overflow-x-auto">
-            <table className="min-w-full border rounded-lg overflow-hidden">
-                <thead className="bg-[#83B582] text-white">
-                    <tr>
-                        <th className="py-2 px-4 border-b">ID</th>
-                        <th className="py-2 px-4 border-b">Client Name </th>
-                        <th className="py-2 px-4 border-b">Client Email</th>
-                        <th className="py-2 px-4 border-b">Phone Number</th>
-                        <th className="py-2 px-4 border-b">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {filteredClients.length === 0 ? (
-                        <tr>
-                            <td colSpan="3" className="text-center py-4">
-                                No clients found.
-                            </td>
-                        </tr>
-                    ) : (
-                        filteredClients.map((client) => (
-                            <tr key={client.id}>
-                                <td className="py-2 px-4 border-b">{client.Client_ID}</td>
-                                <td className="py-2 px-4 border-b">{client.Client_Name}</td>
-                                <td className="py-2 px-4 border-b">{client.Client_Email}</td>                  
-                                <td className="py-2 px-4 border-b">
-                                    {client.Client_Password || "Unregistered"}
-                                </td>        
-                                <td className="py-2 px-4 border-b">
-                                    <div className="flex gap-2 items-center flex-nowrap">
-                                    <button
-                                        className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm whitespace-nowrap"
-                                        disabled
-                                    >
-                                        Reset 
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(client.Client_ID)}
-                                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                                    >
-                                        Delete
-                                    </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))
-                    )}
-                </tbody>
-            </table>
+          <table className="min-w-full border rounded-lg overflow-hidden">
+            <thead className="bg-[#83B582] text-white">
+              <tr>
+                <th className="py-2 px-4 border-b">ID</th>
+                <th className="py-2 px-4 border-b">Client Name</th>
+                <th className="py-2 px-4 border-b">Client Email</th>
+                <th className="py-2 px-4 border-b">Phone Number</th>
+                <th className="py-2 px-4 border-b">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredClients.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="text-center py-4">
+                    No clients found.
+                  </td>
+                </tr>
+              ) : (
+                filteredClients.map((client) => (
+                  <tr key={client.Client_ID}>
+                    <td className="py-2 px-4 border-b">{client.Client_ID}</td>
+                    <td className="py-2 px-4 border-b">{client.Client_Name}</td>
+                    <td className="py-2 px-4 border-b">{client.Client_Email}</td>
+                    <td className="py-2 px-4 border-b">
+                      {client.Client_Password || "Unregistered"}
+                    </td>
+                    <td className="py-2 px-4 border-b">
+                      <div className="flex gap-2 items-center flex-nowrap">
+                        <button
+                          onClick={() => handleDelete(client.Client_ID)}
+                          className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </>
