@@ -78,15 +78,6 @@ export default function LawyerPage() {
                   <p className="text-sm text-[#83B582] font-medium mb-3">
                     {lawyer.Lawyer_Type} Lawyer
                   </p>
-
-                  <button
-                    className="w-full bg-[#83B582] text-black font-medium py-2 rounded hover:bg-[#55a754] transition"
-                    onClick={() =>
-                      alert(`Booking consultation with ${lawyer.Lawyer_Name}`)
-                    }
-                  >
-                    Book Consultation
-                  </button>
                 </div>
               </div>
             ))
